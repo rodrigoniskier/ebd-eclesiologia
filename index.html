@@ -139,6 +139,33 @@
             color: var(--cor-capa-texto);
             text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
         }
+        #capa-texto-principal {
+            align-items: center;
+            text-align: center;
+        }
+        .qr-code-container {
+            margin-top: 40px;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            display: inline-block;
+            text-align: center;
+            box-shadow: var(--sombra-media);
+        }
+        .qr-code-image {
+            width: 150px;
+            height: 150px;
+            display: block;
+            margin: 0 auto 15px;
+            border-radius: 8px;
+        }
+        .qr-code-link {
+            font-family: 'Roboto', sans-serif;
+            font-size: 1rem;
+            color: #333;
+            font-weight: 500;
+            margin: 0;
+        }
         .slide-indice .capa-texto { 
             justify-content: center; 
         }
@@ -446,11 +473,25 @@
             <section class="slide slide-capa slide-ativo" data-title="Capa">
                 <div class="slide-content">
                     <div class="capa-imagem"><img src="capa.jpg" alt="Imagem de uma igreja histórica com vitrais" onerror="this.onerror=null;this.src='https://placehold.co/800x1200/007fc6/FFFFFF?text=Igreja';"></div>
-                    <div class="capa-texto"><h1>O Discípulo e a Igreja</h1></div>
+                    <div class="capa-texto" id="capa-texto-principal">
+                        <h1>O Discípulo e a Igreja</h1>
+                        <div class="qr-code-container">
+                            <img src="qrcode.png" alt="QR Code para o material de apoio" class="qr-code-image" onerror="this.onerror=null;this.src='https://placehold.co/150x150/ffffff/333333?text=QR+Code';">
+                            <p class="qr-code-link">https://rodrigoniskier.github.io/ebd-eclesiologia/</p>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <!-- SLIDE 2: Índice do Semestre -->
+            <!-- SLIDE 2: Introdução -->
+            <section class="slide slide-capa" data-title="Introdução">
+                 <div class="slide-content">
+                    <div class="capa-imagem"><img src="capa.jpg" alt="Pessoas estudando a Bíblia juntas" onerror="this.onerror=null;this.src='https://placehold.co/800x1200/007fc6/FFFFFF?text=Estudo';"></div>
+                    <div class="capa-texto"><h1>A Natureza e o Fundamento da Igreja</h1></div>
+                </div>
+            </section>
+
+            <!-- SLIDE 3: Índice do Semestre -->
             <section class="slide slide-capa slide-indice" data-title="Índice do Semestre">
                 <div class="slide-content">
                     <div class="capa-imagem"><img src="capa.jpg" alt="Imagem decorativa para o índice" onerror="this.onerror=null;this.src='https://placehold.co/800x1200/007fc6/FFFFFF?text=Índice';"></div>
@@ -471,14 +512,6 @@
                             <li><strong>8. A IGREJA DISCIPULADORA</strong> - REV. ADRIANO MORAIS - (21/09)</li>
                         </ul>
                     </div>
-                </div>
-            </section>
-
-            <!-- SLIDE 3: Introdução -->
-            <section class="slide slide-capa" data-title="Introdução">
-                 <div class="slide-content">
-                    <div class="capa-imagem"><img src="capa.jpg" alt="Pessoas estudando a Bíblia juntas" onerror="this.onerror=null;this.src='https://placehold.co/800x1200/007fc6/FFFFFF?text=Estudo';"></div>
-                    <div class="capa-texto"><h1>A Natureza e o Fundamento da Igreja</h1></div>
                 </div>
             </section>
             
