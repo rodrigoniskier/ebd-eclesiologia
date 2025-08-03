@@ -144,27 +144,35 @@
             text-align: center;
         }
         .qr-code-container {
-            margin-top: 40px;
-            background-color: rgba(255, 255, 255, 0.95);
-            padding: 20px;
-            border-radius: 15px;
+            margin-top: 30px;
             display: inline-block;
             text-align: center;
-            box-shadow: var(--sombra-media);
         }
         .qr-code-image {
-            width: 150px;
-            height: 150px;
+            width: 200px;
+            height: 200px;
             display: block;
             margin: 0 auto 15px;
-            border-radius: 8px;
+            border-radius: 15px;
+            background-color: white;
+            padding: 10px;
+            box-shadow: var(--sombra-media);
         }
         .qr-code-link {
-            font-family: 'Roboto', sans-serif;
-            font-size: 1rem;
-            color: #333;
-            font-weight: 500;
-            margin: 0;
+            display: inline-block;
+            background-color: var(--cor-destaque);
+            color: var(--cor-conteudo-texto);
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-family: var(--fonte-titulo);
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: transform 0.3s ease;
+            box-shadow: var(--sombra-suave);
+        }
+        .qr-code-link:hover {
+            transform: scale(1.05);
         }
         .slide-indice .capa-texto { 
             justify-content: center; 
@@ -476,22 +484,14 @@
                     <div class="capa-texto" id="capa-texto-principal">
                         <h1>O Discípulo e a Igreja</h1>
                         <div class="qr-code-container">
-                            <img src="qrcode.png" alt="QR Code para o material de apoio" class="qr-code-image" onerror="this.onerror=null;this.src='https://placehold.co/150x150/ffffff/333333?text=QR+Code';">
-                            <p class="qr-code-link">https://rodrigoniskier.github.io/ebd-eclesiologia/</p>
+                            <img src="qrcode.png" alt="QR Code para o material de apoio" class="qr-code-image" onerror="this.onerror=null;this.src='https://placehold.co/200x200/ffffff/333333?text=QR+Code';">
+                            <a href="https://rodrigoniskier.github.io/ebd-eclesiologia/" target="_blank" class="qr-code-link">Acessar Material</a>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- SLIDE 2: Introdução -->
-            <section class="slide slide-capa" data-title="Introdução">
-                 <div class="slide-content">
-                    <div class="capa-imagem"><img src="capa.jpg" alt="Pessoas estudando a Bíblia juntas" onerror="this.onerror=null;this.src='https://placehold.co/800x1200/007fc6/FFFFFF?text=Estudo';"></div>
-                    <div class="capa-texto"><h1>A Natureza e o Fundamento da Igreja</h1></div>
-                </div>
-            </section>
-
-            <!-- SLIDE 3: Índice do Semestre -->
+            <!-- SLIDE 2: Índice do Semestre -->
             <section class="slide slide-capa slide-indice" data-title="Índice do Semestre">
                 <div class="slide-content">
                     <div class="capa-imagem"><img src="capa.jpg" alt="Imagem decorativa para o índice" onerror="this.onerror=null;this.src='https://placehold.co/800x1200/007fc6/FFFFFF?text=Índice';"></div>
@@ -512,6 +512,14 @@
                             <li><strong>8. A IGREJA DISCIPULADORA</strong> - REV. ADRIANO MORAIS - (21/09)</li>
                         </ul>
                     </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 3: Introdução -->
+            <section class="slide slide-capa" data-title="Introdução">
+                 <div class="slide-content">
+                    <div class="capa-imagem"><img src="capa.jpg" alt="Pessoas estudando a Bíblia juntas" onerror="this.onerror=null;this.src='https://placehold.co/800x1200/007fc6/FFFFFF?text=Estudo';"></div>
+                    <div class="capa-texto"><h1>A Natureza e o Fundamento da Igreja</h1></div>
                 </div>
             </section>
             
