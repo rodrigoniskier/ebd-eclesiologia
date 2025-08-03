@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O Discípulo e a Igreja | Eclesiologia Reformada</title>
+    
+    <!-- FONTES DO GOOGLE -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- BIBLIOTECA DE ÍCONES (PHOSPHOR ICONS) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <style>
+        :root {
+            /* Cores principais */
+            --cor-capa-fundo: #007fc6;
+            --cor-capa-texto: #ffffff;
+            --cor-conteudo-fundo: #fcdccd;
+            --cor-conteudo-texto: #1e52ef;
+            --cor-rodape-menu: #eb580b;
+            --cor-destaque: #f7b801;
+            
+            --altura-rodape: 76px;
+            --sombra-suave: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --sombra-media: 0 10px 20px rgba(0, 0, 0, 0.15);
+            
+            --fonte-titulo: 'Merriweather', serif;
+            --fonte-texto: 'Roboto', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            width: 100%;
+            height: 100vh;
+            font-family: var(--fonte-texto);
+            color: var(--cor-conteudo-texto);
+            background-color: var(--cor-conteudo-fundo);
+            overflow: hidden;
+        }
+        
+        #presentation-frame {
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            position: relative;
+        }
+
+        #content-wrapper {
+            flex-grow: 1; display: flex; flex-direction: column;
+            height: 100%;
+            position: relative;
+        }
+        
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background-color: rgba(0,0,0,0.1);
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 150;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--cor-destaque), var(--cor-rodape-menu));
+            width: 0%; 
+            transition: width 0.4s ease;
+            border-radius: 0 3px 3px 0;
+        }
+
+        #presentation-container { 
+            flex-grow: 1; position: relative; overflow: hidden; 
+            height: calc(100% - var(--altura-rodape));
+        }
+
+        /* --- Rodapé --- */
+        #main-footer {
+            background: var(--cor-rodape-menu); color: var(--cor-capa-texto);
+            padding: 0 25px; display: flex; align-items: center;
+            justify-content: space-between; flex-shrink: 0; 
+            height: var(--altura-rodape); z-index: 200;
+        }
+        .profile-pic { 
+            width: 50px; height: 50px; border-radius: 50%; 
+            object-fit: cover; margin-right: 15px; 
+            border: 3px solid var(--cor-capa-texto); 
+        }
+        .contact-info p { 
+            font-size: 0.95rem; line-height: 1.4; margin: 0;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .presentation-title { 
+            font-family: var(--fonte-titulo); 
+            font-size: 1rem; font-weight: 700; 
+        }
+
+        /* --- Estrutura dos Slides --- */
+        .slide {
+            width: 100%; height: 100%; position: absolute; 
+            opacity: 0; transform: scale(0.98);
+            visibility: hidden;
+            transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+        }
+        .slide.slide-ativo { 
+            opacity: 1; transform: scale(1); 
+            visibility: visible; z-index: 10; 
+        }
+        
+        /* --- Slides de Capa e Índice --- */
+        .slide-capa {
+            background-color: var(--cor-capa-fundo); color: var(--cor-capa-texto);
+            padding: 0;
+        }
+        .slide-capa .slide-content {
+            flex-direction: row; width: 100%; height: 100%;
+            padding: 0; gap: 0; max-width: none;
+        }
+        .capa-imagem {
+            width: 50%; height: 100%;
+            flex-shrink: 0;
+        }
+        .capa-imagem img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+        .capa-texto {
+            width: 50%; height: 100%;
+            display: flex; flex-direction: column;
+            align-items: flex-start; justify-content: center;
+            padding: 5%; text-align: left;
+        }
+        .slide-capa h1 {
+            font-size: clamp(3.2rem, 6vw, 4.8rem);
+            color: var(--cor-capa-texto);
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+        }
+        .slide-indice .capa-texto { 
+            justify-content: center; 
+        }
+        .slide-indice .capa-texto h1 {
+            font-size: clamp(2.2rem, 4.5vw, 3rem);
+            margin-bottom: 1.5rem;
+        }
+        .slide-indice .capa-texto ul {
+            list-style: none; padding: 0;
+            font-size: clamp(0.8rem, 1.3vw, 1.1rem);
+            line-height: 1.8;
+        }
+        .slide-indice ul strong { color: var(--cor-destaque); }
+        .slide-indice ul span {
+            font-size: 0.85em; opacity: 0.8;
+            display: block; margin-left: 20px;
+        }
+        .slide-indice .capa-texto ul i {
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        /* --- Slides de Conteúdo --- */
+        .slide-conteudo {
+            background-color: var(--cor-conteudo-fundo);
+            color: var(--cor-conteudo-texto);
+            padding: 30px;
+        }
+        .slide-content { 
+            width: 100%; max-width: 1300px; height: 100%;
+            display: flex; flex-direction: column;
+            gap: 15px; align-items: center; justify-content: flex-start;
+            overflow: hidden; padding: 20px 10px; 
+            position: relative; z-index: 5;
+        }
+        .text-container {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            padding-right: calc(15% + 20px);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s 0.2s ease-out, transform 0.5s 0.2s ease-out;
+        }
+        
+        .wave-container {
+            position: absolute; top: 0; right: 0;
+            width: 15%; height: 100%;
+            z-index: 2;
+        }
+        .wave-container svg {
+            width: 100%; height: 100%;
+            fill: var(--cor-conteudo-texto);
+        }
+        .logo-container {
+            position: absolute; top: 8%; right: 2.5%;
+            width: 120px; height: 120px;
+            background-color: #fff; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: var(--sombra-media); z-index: 3;
+        }
+        .logo-container img {
+            width: 90%; height: 90%;
+            object-fit: contain; border-radius: 50%;
+        }
+        
+        .socratic-question {
+            font-family: var(--fonte-titulo);
+            font-style: italic;
+            font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+            text-align: center;
+            color: var(--cor-rodape-menu);
+            border-top: 2px solid var(--cor-destaque);
+            border-bottom: 2px solid var(--cor-destaque);
+            position: absolute;
+            width: 60%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            margin: 0;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+        }
+
+        .slide-conteudo.content-visible .socratic-question {
+            top: 20px;
+            left: 20px;
+            transform: translate(0, 0);
+            width: calc(85% - 60px);
+            font-size: clamp(1.2rem, 1.9vw, 1.4rem);
+            text-align: left;
+            border: none;
+            border-left: 4px solid var(--cor-destaque);
+            padding: 10px 15px;
+            background-color: rgba(255,255,255,0.2);
+            position: relative;
+            margin-bottom: 15px;
+        }
+        .slide-conteudo.content-visible .text-container {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+
+        h2 { 
+            font-family: var(--fonte-titulo); color: var(--cor-conteudo-texto); 
+            font-size: clamp(2rem, 3.2vw, 2.8rem); 
+            margin-bottom: 15px; position: relative; 
+            padding-bottom: 10px; font-weight: 700;
+            text-align: left;
+        }
+        h2::after {
+            content: ''; position: absolute; bottom: 0; left: 0;
+            width: 80px; height: 5px; 
+            background-color: var(--cor-rodape-menu); 
+            border-radius: 5px;
+        }
+        p, li { 
+            font-size: clamp(1.1rem, 1.8vw, 1.3rem);
+            line-height: 1.6; margin-bottom: 12px; 
+        }
+        blockquote {
+            font-family: var(--fonte-titulo); font-style: italic;
+            border-left: 5px solid var(--cor-rodape-menu);
+            padding: 12px 20px; margin: 15px 0;
+            font-size: clamp(1rem, 1.6vw, 1.2rem);
+            color: #555;
+            background-color: rgba(255,255,255,0.4);
+            border-radius: 0 8px 8px 0;
+        }
+        blockquote footer { text-align: right; font-weight: bold; font-style: normal; font-size: 0.9em;}
+        .citation-explanation {
+            font-size: clamp(1rem, 1.6vw, 1.1rem) !important;
+            font-style: italic;
+            color: #555;
+            margin-top: -10px;
+            margin-left: 20px;
+        }
+
+        .card-container {
+            display: flex; gap: 20px; width: 100%;
+            align-items: stretch; justify-content: center;
+        }
+        .card {
+            background-color: rgba(255, 255, 255, 0.6);
+            border-radius: 15px; padding: 20px;
+            box-shadow: var(--sombra-suave); flex: 1;
+            display: flex; flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: var(--sombra-media); }
+        .card-icon { font-size: 3rem; color: var(--cor-rodape-menu); margin-bottom: 15px; }
+        .card h3 {
+            font-family: var(--fonte-titulo); font-size: 1.4rem;
+            margin-bottom: 10px; color: var(--cor-conteudo-texto);
+        }
+        .card p, .card li { font-size: 1.05rem; line-height: 1.6; margin-bottom: 10px; }
+        .card ul { padding-left: 20px; list-style: none; }
+
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background-color: rgba(255,255,255,0.5);
+            padding: 15px;
+            border-radius: 12px;
+            border-left: 5px solid var(--cor-destaque);
+        }
+        .timeline-icon {
+            font-size: 2.8rem;
+            color: var(--cor-rodape-menu);
+        }
+        .timeline-content h3 {
+            font-family: var(--fonte-titulo);
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+        .timeline-content p {
+            font-size: 1.05rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--sombra-suave);
+        }
+        .comparison-table th, .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(30, 82, 239, 0.2);
+        }
+        .comparison-table th {
+            background-color: var(--cor-conteudo-texto);
+            color: var(--cor-capa-texto);
+            font-family: var(--fonte-titulo);
+            font-size: 1.2rem;
+        }
+        .comparison-table td { font-size: 1rem; line-height: 1.5; }
+        .comparison-table tr:last-child td { border-bottom: none; }
+
+        /* Slide Final e de Aplicações */
+        .slide-com-imagem-final { padding: 0; }
+        .slide-com-imagem-final .slide-content {
+            flex-direction: row; max-width: none;
+            width: 100%; height: 100%;
+            padding: 0; gap: 0;
+        }
+        .imagem-final-container { width: 33.33%; height: 100%; flex-shrink: 0; }
+        .imagem-final-container img { width: 100%; height: 100%; object-fit: cover; }
+        .conteudo-final-container {
+            width: 66.67%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            padding: 40px; position: relative;
+            background-color: var(--cor-conteudo-fundo);
+        }
+        .conteudo-final-container .text-container {
+            padding-right: 0; max-height: 90%; overflow: hidden; opacity: 1; transform: none;
+        }
+        .aplicacoes .card { padding: 15px; }
+        .aplicacoes .card h3 { font-size: 1.3rem; margin-bottom: 8px; }
+        .aplicacoes .card p { font-size: 1.05rem; line-height: 1.5; }
+
+        .slide-ultimo { background-color: var(--cor-capa-fundo); color: var(--cor-capa-texto); }
+        .slide-ultimo .conteudo-final-container { background-color: var(--cor-capa-fundo); }
+        .slide-ultimo h1 {
+            color: var(--cor-capa-texto); text-align: center;
+            font-size: clamp(4rem, 8vw, 7rem); font-weight: 700;
+            text-shadow: 3px 3px 15px rgba(0,0,0,0.3);
+        }
+        .slide-ultimo .subtitulo {
+            font-size: clamp(1.4rem, 2.6vw, 2rem); max-width: 850px; 
+            margin: 25px auto 0; color: rgba(255, 255, 255, 0.95); 
+            font-weight: 400; text-align: center;
+        }
+        .botoes-finais { display: flex; flex-direction: column; gap: 15px; align-items: center; margin-top: 25px; }
+        .btn-final {
+            border: none; padding: 12px 25px; 
+            font-family: var(--fonte-titulo); font-size: 1.1rem; font-weight: 700;
+            border-radius: 50px; cursor: pointer; transition: all 0.3s ease;
+            display: inline-flex; align-items: center; gap: 10px;
+            box-shadow: var(--sombra-suave);
+        }
+        #print-btn { background-color: var(--cor-destaque); color: var(--cor-conteudo-texto); }
+       
+        /* --- Controles de Navegação --- */
+        .nav-buttons {
+            position: absolute; 
+            bottom: calc(var(--altura-rodape) + 15px);
+            right: 30px; z-index: 160; 
+            display: flex; gap: 15px;
+        }
+        .nav-buttons button {
+            background-color: var(--cor-rodape-menu); color: white; border: none;
+            width: 55px; height: 55px; border-radius: 50%; 
+            font-size: 1.8rem; cursor: pointer; transition: all 0.3s ease; 
+            box-shadow: var(--sombra-media);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .nav-buttons button:hover { transform: scale(1.1); background-color: #d14e0a; }
+        .nav-buttons button:disabled { background-color: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
+        
+        @media (max-width: 1024px) {
+            .slide-capa .slide-content { flex-direction: column; }
+            .capa-imagem, .capa-texto { width: 100%; height: 50%; padding: 20px; }
+            .capa-texto { align-items: center; text-align: center; }
+            .text-container { padding-right: 15px; }
+            .wave-container, .logo-container { display: none; }
+            .card-container { flex-direction: column; }
+            .socratic-question { width: 80%; }
+            .slide-conteudo.content-visible .socratic-question { width: calc(100% - 40px); }
+        }
+        @media (max-width: 768px) {
+            :root { --altura-rodape: 110px; }
+            #main-footer { flex-direction: column; text-align: center; gap: 10px; height: var(--altura-rodape); padding: 10px; }
+            .nav-buttons { bottom: calc(var(--altura-rodape) + 15px); right: 15px; }
+            .slide-com-imagem-final .slide-content { flex-direction: column; }
+            .imagem-final-container { width: 100%; height: 40%; }
+            .conteudo-final-container { width: 100%; height: 60%; }
+            h2 { font-size: clamp(1.8rem, 5vw, 2.2rem); }
+            p, li { font-size: clamp(1rem, 2.5vw, 1.1rem); }
+            .socratic-question { font-size: clamp(1.2rem, 4vw, 1.5rem); }
+        }
+    </style>
+</head>
+<body>
+
+<div id="presentation-frame">
+    <div id="content-wrapper">
+        <div class="progress-bar-container"><div class="progress-bar"></div></div>
+        <main id="presentation-container">
+            
+            <!-- SLIDE 1: Capa -->
+            <section class="slide slide-capa slide-ativo" data-title="Capa">
+                <div class="slide-content">
+                    <div class="capa-imagem"><img src="capa.jpg" alt="Imagem de uma igreja histórica com vitrais" onerror="this.onerror=null;this.src='https://placehold.co/800x1200/007fc6/FFFFFF?text=Igreja';"></div>
+                    <div class="capa-texto"><h1>O Discípulo e a Igreja</h1></div>
+                </div>
+            </section>
+
+            <!-- SLIDE 2: Índice do Semestre -->
+            <section class="slide slide-capa slide-indice" data-title="Índice do Semestre">
+                <div class="slide-content">
+                    <div class="capa-imagem"><img src="capa.jpg" alt="Imagem decorativa para o índice" onerror="this.onerror=null;this.src='https://placehold.co/800x1200/007fc6/FFFFFF?text=Índice';"></div>
+                    <div class="capa-texto">
+                        <h1>Índice de Aulas</h1>
+                        <ul>
+                            <li><strong>1. A NATUREZA E O FUNDAMENTO DA IGREJA</strong> - (03/08)</li>
+                            <li><strong>2. A UNIDADE E A SANTIDADE DA IGREJA</strong> - (10/08)</li>
+                            <li><strong>3. A VOCAÇÃO E A MISSÃO DA IGREJA</strong> - (17/08)
+                                <span>PROCLAMAÇÃO - SERVIÇO - ADORAÇÃO</span></li>
+                            <li><strong>4. AS MARCAS DA IGREJA</strong> - (24/08)
+                                <span>FIDELIDADE ÀS ESCRITURAS - SACRAMENTOS - DISCIPLINA</span></li>
+                            <li><strong>PARTE 02</strong></li>
+                            <li><strong>5. A ORIGEM DA IGREJA REFORMADA</strong> - (31/08)</li>
+                            <li><strong>6. A ESTRUTURA/GOVERNO DA IPB</strong> - (07/09)</li>
+                            <li><strong>7. A IGREJA E A PÓS-MODERNIDADE</strong> - (14/09)
+                                <span>INDIVIDUALISMO - MATERIALISMO - NARCISISMO...</span></li>
+                            <li><strong>8. A IGREJA DISCIPULADORA</strong> - REV. ADRIANO MORAIS - (21/09)</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 3: Introdução -->
+            <section class="slide slide-capa" data-title="Introdução">
+                 <div class="slide-content">
+                    <div class="capa-imagem"><img src="capa.jpg" alt="Pessoas estudando a Bíblia juntas" onerror="this.onerror=null;this.src='https://placehold.co/800x1200/007fc6/FFFFFF?text=Estudo';"></div>
+                    <div class="capa-texto"><h1>A Natureza e o Fundamento da Igreja</h1></div>
+                </div>
+            </section>
+            
+            <!-- SLIDE 4: Tópicos da Aula -->
+            <section class="slide slide-capa slide-indice" data-title="Tópicos da Aula">
+                <div class="slide-content">
+                    <div class="capa-imagem"><img src="capa.jpg" alt="Mapa conceitual ou quadro branco com anotações" onerror="this.onerror=null;this.src='https://placehold.co/800x1200/007fc6/FFFFFF?text=Tópicos';"></div>
+                    <div class="capa-texto">
+                        <h1 style="font-size: clamp(2rem, 4vw, 2.8rem);">Tópicos da Aula</h1>
+                        <ul style="line-height: 2.2; font-size: clamp(0.9rem, 1.5vw, 1.05rem);">
+                            <li><i class="ph-bold ph-translate"></i> <strong>A Origem da Palavra "Igreja"</strong></li>
+                            <li><i class="ph-bold ph-book-open"></i> <strong>Os 5 Sentidos Bíblicos de "Igreja"</strong></li>
+                            <li><i class="ph-bold ph-hourglass"></i> <strong>A Origem Eterna e Histórica da Igreja</strong></li>
+                            <li><i class="ph-bold ph-eye"></i> <strong>A Dupla Característica: Visível e Invisível</strong></li>
+                            <li><i class="ph-bold ph-globe"></i> <strong>A Dupla Característica: Católica e Local</strong></li>
+                            <li><i class="ph-bold ph-hands-praying"></i> <strong>Aplicações Práticas para a Vida Cristã</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 5: Etimologia -->
+            <section class="slide slide-conteudo" data-title="Etimologia de 'Igreja'" data-animation-state="question">
+                <div class="wave-container"><svg viewBox="0 0 100 1000" preserveAspectRatio="none"><path d="M 100 0 C 0 333, 200 666, 100 1000 L 100 0 Z" /></svg></div>
+                <div class="logo-container"><img src="logo.jpg" alt="Logo da Igreja ou evento" onerror="this.onerror=null;this.src='https://placehold.co/150x150/EB580B/FFFFFF?text=IPA';"></div>
+                <div class="slide-content">
+                    <p class="socratic-question">De onde vem a palavra 'Igreja'? Qual era seu significado original?</p>
+                    <div class="text-container">
+                        <h2>A Origem da Palavra "Igreja"</h2>
+                        <div class="card-container">
+                            <div class="card">
+                                <h3>Novo Testamento (Grego)</h3>
+                                <p style="font-size: 1.1rem;">A palavra é <strong>ἐκκλησία (Ekklesia)</strong>. Vem de `Ek` (para fora) + `Kaleo` (chamar), significando "os chamados para fora". No mundo greco-romano, designava uma assembleia de cidadãos convocados.</p>
+                                <blockquote style="font-size: 1rem;"><p>...será decidida em assembleia regular (en te ennomo ekklesia).</p><footer>Atos 19:39 (ARA)</footer></blockquote>
+                            </div>
+                            <div class="card">
+                                <h3>Antigo Testamento (Hebraico)</h3>
+                                <p style="font-size: 1.1rem;">Na Septuaginta (LXX), `Ekklesia` traduz o hebraico <strong>קָהָל (Qahal)</strong>, que significa a "assembleia" ou "congregação" do povo de Israel convocado por Deus. A Igreja do NT herda este rico conceito.</p>
+                                <blockquote style="font-size: 1rem;"><p>Nenhum amonita ou moabita entrará na assembleia do SENHOR (Qahal YHWH)...</p><footer>Deuteronômio 23:3 (ARA)</footer></blockquote>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 6: Sentido 1 -->
+            <section class="slide slide-conteudo" data-title="Sentido 1: Corpo Total dos Fiéis" data-animation-state="question">
+                <div class="wave-container"><svg viewBox="0 0 100 1000" preserveAspectRatio="none"><path d="M 100 0 C 0 333, 200 666, 100 1000 L 100 0 Z" /></svg></div>
+                <div class="logo-container"><img src="logo.jpg" alt="Logo da Igreja ou evento" onerror="this.onerror=null;this.src='https://placehold.co/150x150/EB580B/FFFFFF?text=IPA';"></div>
+                <div class="slide-content">
+                    <p class="socratic-question">Em que sentido a palavra igreja é usada no Novo Testamento?</p>
+                    <div class="text-container">
+                        <h2>1. O Corpo Total dos Fiéis</h2>
+                        <p style="font-size: 1.25rem;">Este é o sentido mais amplo: a <strong>Igreja Invisível e Universal</strong>. Refere-se ao corpo completo de todos os eleitos que foram, são ou serão unidos a Cristo.</p>
+                        <blockquote>
+                            <p>...para a apresentar a si mesmo igreja gloriosa, sem mácula, nem ruga... porém santa e sem defeito.</p>
+                            <footer>Efésios 5:27 (ARA)</footer>
+                        </blockquote>
+                        <p class="citation-explanation">Esta perfeição absoluta não pode se referir a nenhuma igreja local, mas apenas ao corpo total dos salvos, como Deus os vê em Cristo.</p>
+                         <blockquote>
+                            <p>...sobre esta pedra edificarei a minha igreja, e as portas do inferno não prevalecerão contra ela.</p>
+                            <footer>Mateus 16:18 (ARA)</footer>
+                        </blockquote>
+                        <p class="citation-explanation">A promessa de indestrutibilidade foi dada à Igreja universal, não a uma congregação específica, que pode deixar de existir.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- SLIDE 7: Sentido 2 -->
+            <section class="slide slide-conteudo" data-title="Sentido 2: Professos no Mundo" data-animation-state="question">
+                <div class="wave-container"><svg viewBox="0 0 100 1000" preserveAspectRatio="none"><path d="M 100 0 C 0 333, 200 666, 100 1000 L 100 0 Z" /></svg></div>
+                <div class="logo-container"><img src="logo.jpg" alt="Logo da Igreja ou evento" onerror="this.onerror=null;this.src='https://placehold.co/150x150/EB580B/FFFFFF?text=IPA';"></div>
+                <div class="slide-content">
+                    <p class="socratic-question">E quanto à Igreja que vemos no mundo? Quem são seus membros?</p>
+                    <div class="text-container">
+                        <h2>2. Os Professos no Mundo</h2>
+                        <p>Este é o sentido da <strong>Igreja Visível e Universal</strong>. Consiste em todos aqueles que, em todo o mundo, professam a fé em Cristo, juntamente com seus filhos. É o "reino dos céus" que contém tanto o trigo quanto o joio.</p>
+                        <blockquote>
+                            <p>A uns estabeleceu Deus na igreja, primeiramente, apóstolos; em segundo lugar, profetas; em terceiro lugar, mestres...</p>
+                            <footer>1 Coríntios 12:28 (ARA)</footer>
+                        </blockquote>
+                        <p class="citation-explanation">A lista de ofícios (apóstolos, profetas) refere-se à estrutura organizacional e visível da Igreja na terra.</p>
+                         <blockquote>
+                             <p>Enquanto isso, acrescentava-lhes o Senhor, dia a dia, os que iam sendo salvos.</p>
+                            <footer>Atos 2:47 (ARA)</footer>
+                        </blockquote>
+                        <p class="citation-explanation">O acréscimo diário de pessoas era um evento público e observável, referindo-se à comunidade visível dos crentes.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 8: Sentido 3 -->
+            <section class="slide slide-conteudo" data-title="Sentido 3: Congregação Local" data-animation-state="question">
+                <div class="wave-container"><svg viewBox="0 0 100 1000" preserveAspectRatio="none"><path d="M 100 0 C 0 333, 200 666, 100 1000 L 100 0 Z" /></svg></div>
+                <div class="logo-container"><img src="logo.jpg" alt="Logo da Igreja ou evento" onerror="this.onerror=null;this.src='https://placehold.co/150x150/EB580B/FFFFFF?text=IPA';"></div>
+                <div class="slide-content">
+                    <p class="socratic-question">Uma reunião de crentes em uma casa pode ser chamada de "Igreja"?</p>
+                    <div class="text-container">
+                        <h2>3. A Congregação Local</h2>
+                        <p>A palavra "igreja" é frequentemente usada para designar um grupo de crentes em um lugar específico, que se reúne para adorar a Deus, mesmo que em número reduzido ou em uma residência particular.</p>
+                        <blockquote>
+                            <p>Saudai Priscila e Áquila... saudai igualmente a igreja que se reúne na casa deles.</p>
+                            <footer>Romanos 16:3, 5 (ARA)</footer>
+                        </blockquote>
+                         <blockquote>
+                             <p>As igrejas da Ásia vos saúdam... bem assim, a igreja que está na casa deles.</p>
+                            <footer>1 Coríntios 16:19 (ARA)</footer>
+                        </blockquote>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 9: Sentido 4 -->
+            <section class="slide slide-conteudo" data-title="Sentido 4: Congregações Associadas" data-animation-state="question">
+                <div class="wave-container"><svg viewBox="0 0 100 1000" preserveAspectRatio="none"><path d="M 100 0 C 0 333, 200 666, 100 1000 L 100 0 Z" /></svg></div>
+                <div class="logo-container"><img src="logo.jpg" alt="Logo da Igreja ou evento" onerror="this.onerror=null;this.src='https://placehold.co/150x150/EB580B/FFFFFF?text=IPA';"></div>
+                <div class="slide-content">
+                    <p class="socratic-question">Como a Bíblia se refere a milhares de crentes em uma mesma cidade? Caberiam todos em um só lugar?</p>
+                    <div class="text-container">
+                        <h2>4. Congregações Associadas</h2>
+                        <p>O termo também se aplica a um conjunto de congregações locais, geograficamente próximas, que estão ligadas sob um governo eclesiástico comum, formando uma unidade maior.</p>
+                        <p>O exemplo clássico é "a igreja em Jerusalém", que, segundo Atos, tinha dezenas de milhares de membros, um número impossível de se reunir em um único local de culto.</p>
+                        <blockquote>
+                            <p>Bem vês, irmão, quantas dezenas de milhares há entre os judeus que creram...</p>
+                            <footer>Atos 21:20 (ARA)</footer>
+                        </blockquote>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 10: Sentido 5 -->
+            <section class="slide slide-conteudo" data-title="Sentido 5: Representantes da Igreja" data-animation-state="question">
+                <div class="wave-container"><svg viewBox="0 0 100 1000" preserveAspectRatio="none"><path d="M 100 0 C 0 333, 200 666, 100 1000 L 100 0 Z" /></svg></div>
+                <div class="logo-container"><img src="logo.jpg" alt="Logo da Igreja ou evento" onerror="this.onerror=null;this.src='https://placehold.co/150x150/EB580B/FFFFFF?text=IPA';"></div>
+                <div class="slide-content">
+                    <p class="socratic-question">"Se ele não os atender, dize-o à <b>igreja</b>; e, se recusar ouvir também a <b>igreja</b>, considera-o como gentio e publicano." (Mateus 18:17)<br>A quem Jesus se refere com o termo <b>Igreja</b>?</p>
+                    <div class="text-container">
+                        <h2>5. Os Representantes da Igreja</h2>
+                        <p>Devido ao princípio da representação, a palavra "igreja" pode se referir aos seus oficiais (presbíteros, pastores) que agem em nome do corpo de crentes, exercendo o governo e a disciplina.</p>
+                        <p style="font-size: 1.2rem;">Neste contexto de Mateus 18, "dizer à igreja" significa levar a questão ao tribunal de oficiais estabelecido para julgar tais causas, e não a toda a congregação.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 11: Implicações Práticas dos Sentidos -->
+            <section class="slide slide-conteudo" data-title="Implicações (Sentidos)" data-animation-state="question">
+                <div class="wave-container"><svg viewBox="0 0 100 1000" preserveAspectRatio="none"><path d="M 100 0 C 0 333, 200 666, 100 1000 L 100 0 Z" /></svg></div>
+                <div class="logo-container"><img src="logo.jpg" alt="Logo da Igreja ou evento" onerror="this.onerror=null;this.src='https://placehold.co/150x150/EB580B/FFFFFF?text=IPA';"></div>
+                <div class="slide-content">
+                    <p class="socratic-question">Saber esses significados muda algo na minha vida cristã?</p>
+                    <div class="text-container">
+                        <h2>Implicações Práticas</h2>
+                        <div class="card-container">
+                            <div class="card">
+                                <i class="ph-bold ph-church card-icon"></i>
+                                <h3>Valorize a Igreja Local</h3>
+                                <p>Ela é a expressão visível e concreta da grande Igreja universal de Cristo.</p>
+                            </div>
+                             <div class="card">
+                                <i class="ph-bold ph-binoculars card-icon"></i>
+                                <h3>Evite Confusão</h3>
+                                <p>Distinguimos o que a Bíblia diz sobre a Igreja ideal (invisível) e a Igreja real (visível).</p>
+                            </div>
+                             <div class="card">
+                                <i class="ph-bold ph-users-four card-icon"></i>
+                                <h3>Respeite a Liderança</h3>
+                                <p>Entendemos que os oficiais representam a igreja no exercício do governo e da disciplina.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDES DA ORIGEM DA IGREJA -->
+            <section class="slide slide-conteudo" data-title="Origem 1: No Plano Eterno" data-animation-state="question">
+                <div class="wave-container"><svg viewBox="0 0 100 1000" preserveAspectRatio="none"><path d="M 100 0 C 0 333, 200 666, 100 1000 L 100 0 Z" /></svg></div>
+                <div class="logo-container"><img src="logo.jpg" alt="Logo da Igreja ou evento" onerror="this.onerror=null;this.src='https://placehold.co/150x150/EB580B/FFFFFF?text=IPA';"></div>
+                <div class="slide-content">
+                    <p class="socratic-question">Quando começa a história da Igreja?</p>
+                    <div class="text-container">
+                        <h2>A Origem Eterna da Igreja</h2>
+                        <p>A Igreja não é um acidente na história, mas uma parte central do plano eterno de Deus. Antes da criação do mundo, Deus já havia eleito em Cristo um povo para si, que constituiria a Sua Igreja.</p>
+                        <blockquote>
+                            <p>...assim como nos escolheu, nele, antes da fundação do mundo, para sermos santos e irrepreensíveis perante ele; e em amor nos predestinou para ele, para a adoção de filhos, por meio de Jesus Cristo...</p>
+                            <footer>Efésios 1:4-5 (ARA)</footer>
+                        </blockquote>
+                        <p style="font-size: 1.2rem;">Portanto, a existência da Igreja está fundamentada na vontade soberana e no decreto eterno de Deus.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide slide-conteudo" data-title="Origem 2: A Igreja no Éden" data-animation-state="question">
+                <div class="wave-container"><svg viewBox="0 0 100 1000" preserveAspectRatio="none"><path d="M 100 0 C 0 333, 200 666, 100 1000 L 100 0 Z" /></svg></div>
+                <div class="logo-container"><img src="logo.jpg" alt="Logo da Igreja ou evento" onerror="this.onerror=null;this.src='https://placehold.co/150x150/EB580B/FFFFFF?text=IPA';"></div>
+                <div class="slide-content">
+                    <p class="socratic-question">Onde encontramos a primeira "igreja" na Bíblia?</p>
+                    <div class="text-container">
+                        <h2>A Igreja no Éden (Pré-Queda)</h2>
+                        <p>Na teologia pactual, o Jardim do Éden pode ser visto como o primeiro santuário, e Adão e Eva como a primeira congregação. Ali existiam elementos de uma igreja em estado probatório:</p>
+                         <div class="card-container">
+                            <div class="card">
+                                <i class="ph-bold ph-tree card-icon"></i>
+                                <h3>Sinais Sacramentais</h3>
+                                <p style="font-size: 1.1rem;">A Árvore da Vida (selo da vida eterna) e a Árvore do Conhecimento (selo da prova da aliança).</p>
+                            </div>
+                            <div class="card">
+                                <i class="ph-bold ph-calendar-check card-icon"></i>
+                                <h3>Culto e Adoração</h3>
+                                <p style="font-size: 1.1rem;">O Sábado como dia de descanso e comunhão especial com Deus, e o mandato de Adão como sacerdote-rei para "guardar" o jardim.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide slide-conteudo" data-title="Origem 3: A Igreja Redentiva" data-animation-state="question">
+                <div class="wave-container"><svg viewBox="0 0 100 1000" preserveAspectRatio="none"><path d="M 100 0 C 0 333, 200 666, 100 1000 L 100 0 Z" /></svg></div>
+                <div class="logo-container"><img src="logo.jpg" alt="Logo da Igreja ou evento" onerror="this.onerror=null;this.src='https://placehold.co/150x150/EB580B/FFFFFF?text=IPA';"></div>
+                <div class="slide-content">
+                    <p class="socratic-question">Como a Igreja sobreviveu à Queda?</p>
+                    <div class="text-container">
+                        <h2>A Igreja Redentiva no Antigo Testamento</h2>
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <i class="ph-bold ph-sparkle timeline-icon"></i>
+                                <div class="timeline-content">
+                                    <h3>O Protoevangelho</h3>
+                                    <p>Após a queda, Deus promete um Redentor (Gn 3:15), iniciando a história da Igreja como uma comunidade redimida, a linhagem da mulher.</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <i class="ph-bold ph-users-three timeline-icon"></i>
+                                <div class="timeline-content">
+                                    <h3>Os Patriarcas</h3>
+                                    <p>A Igreja continua na linhagem de Sete, Noé e, especialmente, na aliança com Abraão (Gn 17:7), que formaliza um povo pactual visível.</p>
+                                </div>
+                            </div>
+                             <div class="timeline-item">
+                                <i class="ph-bold ph-scroll timeline-icon"></i>
+                                <div class="timeline-content">
+                                    <h3>Israel</h3>
+                                    <p>Com Moisés, a Igreja assume uma forma nacional. Israel é a "congregação (ekklesia) no deserto" (At 7:38), com leis e culto que apontavam para Cristo.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide slide-conteudo" data-title="Origem 4: Instituição no NT" data-animation-state="question">
+                <div class="wave-container"><svg viewBox="0 0 100 1000" preserveAspectRatio="none"><path d="M 100 0 C 0 333, 200 666, 100 1000 L 100 0 Z" /></svg></div>
+                <div class="logo-container"><img src="logo.jpg" alt="Logo da Igreja ou evento" onerror="this.onerror=null;this.src='https://placehold.co/150x150/EB580B/FFFFFF?text=IPA';"></div>
+                <div class="slide-content">
+                    <p class="socratic-question">Se a Igreja já existia no Antigo Testamento, o que Cristo fez de novo?</p>
+                    <div class="text-container">
+                        <h2>A Instituição Formal da Igreja</h2>
+                        <p style="font-size: 1.2rem;">Cristo não criou a Igreja do nada. Ele a redimiu e a <strong>instituiu formalmente</strong> na Nova Aliança, dando-lhe sua forma definitiva e universal. Ele é o fundamento sobre o qual a Igreja de todas as eras é edificada.</p>
+                        <div class="card-container">
+                            <div class="card">
+                                <i class="ph-bold ph-cross card-icon"></i>
+                                <h3>Fundamento em Cristo</h3>
+                                <p>Ele cumpriu o que o AT apontava e se tornou a pedra angular. A Igreja agora está edificada sobre o fundamento dos apóstolos e profetas (Ef 2:20).</p>
+                            </div>
+                            <div class="card">
+                                <i class="ph-bold ph-hand-waving card-icon"></i>
+                                <h3>Missão e Ordenanças</h3>
+                                <p>Ele deu à Igreja sua missão universal (Mt 28:19-20) e suas ordenanças: o Batismo e a Ceia, que substituem os ritos da antiga aliança.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide slide-conteudo" data-title="Implicações (Origem)" data-animation-state="question">
+                <div class="wave-container"><svg viewBox="0 0 100 1000" preserveAspectRatio="none"><path d="M 100 0 C 0 333, 200 666, 100 1000 L 100 0 Z" /></svg></div>
+                <div class="logo-container"><img src="logo.jpg" alt="Logo da Igreja ou evento" onerror="this.onerror=null;this.src='https://placehold.co/150x150/EB580B/FFFFFF?text=IPA';"></div>
+                <div class="slide-content">
+                    <p class="socratic-question">Por que é importante saber que a Igreja existe desde o início?</p>
+                    <div class="text-container">
+                        <h2>Implicações Práticas</h2>
+                        <div class="card-container">
+                            <div class="card">
+                                <i class="ph-bold ph-users card-icon"></i>
+                                <h3>Não estamos sozinhos</h3>
+                                <p>Fazemos parte de um único povo de Deus que atravessa toda a história, desde Adão até hoje.</p>
+                            </div>
+                             <div class="card">
+                                <i class="ph-bold ph-book-bookmark card-icon"></i>
+                                <h3>A Bíblia é uma só história</h3>
+                                <p>O Antigo Testamento não é sobre "outro povo", mas sobre a nossa própria história como Igreja em sua infância.</p>
+                            </div>
+                             <div class="card">
+                                <i class="ph-bold ph-anchor-simple card-icon"></i>
+                                <h3>Deus é fiel</h3>
+                                <p>Ele preservou Sua Igreja através de todas as eras e alianças, e continuará a fazê-lo.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="slide slide-conteudo" data-title="Visível vs. Invisível" data-animation-state="question">
+                <div class="wave-container"><svg viewBox="0 0 100 1000" preserveAspectRatio="none"><path d="M 100 0 C 0 333, 200 666, 100 1000 L 100 0 Z" /></svg></div>
+                <div class="logo-container"><img src="logo.jpg" alt="Logo da Igreja ou evento" onerror="this.onerror=null;this.src='https://placehold.co/150x150/EB580B/FFFFFF?text=IPA';"></div>
+                <div class="slide-content">
+                    <p class="socratic-question">Se a Igreja é "gloriosa, sem mácula", por que vemos nela tanta falha e imperfeição?</p>
+                    <div class="text-container" style="padding-right: 0;">
+                        <h2>A Dupla Característica da Igreja</h2>
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>Atributo</th>
+                                    <th>Igreja Invisível</th>
+                                    <th>Igreja Visível</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Composição</strong></td>
+                                    <td>Apenas os eleitos ("trigo").</td>
+                                    <td>Professos e seus filhos ("trigo e joio").</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Relação com Cristo</strong></td>
+                                    <td>União interna, espiritual e salvífica.</td>
+                                    <td>Relação externa, pactual e professa.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Visibilidade</strong></td>
+                                    <td>Conhecida perfeitamente por Deus.</td>
+                                    <td>Reconhecida pelos homens.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Natureza</strong></td>
+                                    <td>Perfeita e santa aos olhos de Deus.</td>
+                                    <td>Imperfeita e militante.</td>
+                                </tr>
+                                 <tr>
+                                    <td><strong>Referência</strong></td>
+                                    <td>Efésios 5:27</td>
+                                    <td>Mateus 13:47</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide slide-conteudo" data-title="Implicações (Visível/Invisível)" data-animation-state="question">
+                <div class="wave-container"><svg viewBox="0 0 100 1000" preserveAspectRatio="none"><path d="M 100 0 C 0 333, 200 666, 100 1000 L 100 0 Z" /></svg></div>
+                <div class="logo-container"><img src="logo.jpg" alt="Logo da Igreja ou evento" onerror="this.onerror=null;this.src='https://placehold.co/150x150/EB580B/FFFFFF?text=IPA';"></div>
+                <div class="slide-content">
+                    <p class="socratic-question">Como essa dupla característica afeta nossa vida na igreja local?</p>
+                    <div class="text-container">
+                        <h2>Implicações Práticas</h2>
+                        <div class="card-container">
+                            <div class="card">
+                                <i class="ph-bold ph-eye card-icon"></i>
+                                <h3>Tenha expectativas realistas</h3>
+                                <p>Amamos a igreja local, mesmo com suas falhas, sabendo que ela é composta por pecadores em santificação.</p>
+                            </div>
+                             <div class="card">
+                                <i class="ph-bold ph-heart-straight card-icon"></i>
+                                <h3>Foque na fé verdadeira</h3>
+                                <p>A salvação não vem por ser membro, mas por uma união vital e invisível com Cristo.</p>
+                            </div>
+                             <div class="card">
+                                <i class="ph-bold ph-anchor card-icon"></i>
+                                <h3>Tenha esperança segura</h3>
+                                <p>Apesar das fraquezas da igreja visível, a verdadeira Igreja invisível está segura e será glorificada.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide slide-conteudo" data-title="Implicações (Católica/Local)" data-animation-state="question">
+                <div class="wave-container"><svg viewBox="0 0 100 1000" preserveAspectRatio="none"><path d="M 100 0 C 0 333, 200 666, 100 1000 L 100 0 Z" /></svg></div>
+                <div class="logo-container"><img src="logo.jpg" alt="Logo da Igreja ou evento" onerror="this.onerror=null;this.src='https://placehold.co/150x150/EB580B/FFFFFF?text=IPA';"></div>
+                <div class="slide-content">
+                    <p class="socratic-question">Como devo me relacionar com crentes de outras denominações e com minha própria congregação?</p>
+                    <div class="text-container">
+                        <h2>Implicações Práticas</h2>
+                        <div class="card-container">
+                            <div class="card">
+                                <i class="ph-bold ph-handshake card-icon"></i>
+                                <h3>Combata o sectarismo</h3>
+                                <p>Reconhecemos como irmãos todos que professam a fé verdadeira, mesmo em outras denominações fiéis.</p>
+                            </div>
+                             <div class="card">
+                                <i class="ph-bold ph-house card-icon"></i>
+                                <h3>Comprometa-se localmente</h3>
+                                <p>O amor pela Igreja universal se prova no serviço, submissão e comunhão na nossa igreja local.</p>
+                            </div>
+                             <div class="card">
+                                <i class="ph-bold ph-globe-simple card-icon"></i>
+                                <h3>Ore e coopere</h3>
+                                <p>Interessamo-nos pela obra de Cristo em todo o mundo, orando e, quando possível, cooperando com outras igrejas.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide slide-com-imagem-final" data-title="Aplicações Finais">
+                <div class="imagem-final-container"><img src="final.jpg" alt="Pessoas em comunhão, orando juntas" onerror="this.onerror=null;this.src='https://placehold.co/800x1200/4a4a4a/FFFFFF?text=Comunhão';"></div>
+                <div class="conteudo-final-container">
+                    <div class="text-container">
+                        <h2 style="color: var(--cor-conteudo-texto);">Resumo e Aplicações Finais</h2>
+                        <div class="card-container aplicacoes" style="flex-direction: column; gap: 15px;">
+                            <div class="card">
+                                <h3><i class="ph-fill ph-church"></i> Valorize a Igreja Visível</h3>
+                                <p>Não despreze a comunhão local (Hb 10:25). É o ambiente ordenado por Deus para nosso crescimento, adoração e serviço. Um "cristão solitário" é uma contradição.</p>
+                            </div>
+                            <div class="card">
+                                <h3><i class="ph-fill ph-scales"></i> Tenha Discernimento e Paciência</h3>
+                                <p>Entenda que a igreja visível é mista (trigo e joio). Isso nos chama à paciência com as falhas dos irmãos e a buscar as marcas de uma igreja fiel.</p>
+                            </div>
+                             <div class="card">
+                                <h3><i class="ph-fill ph-anchor-simple"></i> Descanse na Soberania de Deus</h3>
+                                <p>Apesar das falhas, a verdadeira Igreja está segura em Cristo. Ele a fundou, a sustenta e a preservará até o fim (Mt 16:18).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide slide-ultimo slide-com-imagem-final" data-title="Final">
+                <div class="slide-content">
+                    <div class="imagem-final-container"><img src="final.jpg" alt="Imagem de encerramento" onerror="this.onerror=null;this.src='https://placehold.co/800x1200/4a4a4a/FFFFFF?text=Soli Deo Gloria';"></div>
+                    <div class="conteudo-final-container">
+                         <div class="text-container" style="text-align: center; padding-right: 0;">
+                            <h1>Soli Deo Gloria</h1>
+                            <p class="subtitulo">Que Deus preserve e purifique a Sua amada Igreja, até o dia final.</p>
+                            <div class="botoes-finais">
+                                <button id="print-btn" class="btn-final">
+                                    <i class="ph-bold ph-printer"></i> Imprimir Resumo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+        <footer id="main-footer">
+            <div class="footer-left" style="display: flex; align-items: center;">
+                <img src="foto.jpg" class="profile-pic" alt="Foto de perfil do palestrante">
+                <div class="contact-info">
+                    <p><b>Presbítero Rodrigo Niskier</b> <span>| niskier.rodrigo@gmail.com</span></p>
+                </div>
+            </div>
+            <div class="footer-right">
+                <p class="presentation-title">Escola Bíblica Dominical - IPA</p>
+            </div>
+        </footer>
+    </div>
+    
+    <div class="nav-buttons">
+        <button id="prev-btn" title="Slide Anterior (←)"><i class="ph-bold ph-arrow-left"></i></button>
+        <button id="next-btn" title="Próximo Slide (→)"><i class="ph-bold ph-arrow-right"></i></button>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const nextBtn = document.getElementById('next-btn');
+    const prevBtn = document.getElementById('prev-btn');
+    const printBtn = document.getElementById('print-btn');
+    const progressBar = document.querySelector('.progress-bar');
+
+    let currentSlideIndex = 0;
+
+    function resetSlideState(slide) {
+        if (slide.classList.contains('slide-conteudo')) {
+            slide.classList.remove('content-visible');
+            slide.dataset.animationState = 'question';
+        }
+    }
+
+    function showSlide(index, isPrev = false) {
+        if (index >= slides.length || index < 0) return;
+
+        const oldSlide = slides[currentSlideIndex];
+        resetSlideState(oldSlide);
+        oldSlide.classList.remove('slide-ativo');
+
+        currentSlideIndex = index;
+        const newSlide = slides[currentSlideIndex];
+        newSlide.classList.add('slide-ativo');
+        
+        // Se for navegação para trás, já mostra o conteúdo direto.
+        if (isPrev && newSlide.classList.contains('slide-conteudo')) {
+            newSlide.classList.add('content-visible');
+            newSlide.dataset.animationState = 'content';
+        }
+
+        // Se o slide não tiver animação de pergunta, mostra o conteúdo direto.
+        if (newSlide.classList.contains('slide-conteudo') && !newSlide.dataset.animationState) {
+            newSlide.classList.add('content-visible');
+        }
+
+        updateUI();
+    }
+
+    function advance() {
+        const currentSlide = slides[currentSlideIndex];
+        
+        if (currentSlide.classList.contains('slide-conteudo') && currentSlide.dataset.animationState === 'question') {
+            currentSlide.classList.add('content-visible');
+            currentSlide.dataset.animationState = 'content';
+        } else {
+            if (currentSlideIndex < slides.length - 1) {
+                showSlide(currentSlideIndex + 1);
+            }
+        }
+        updateUI();
+    }
+
+    function retreat() {
+        if (currentSlideIndex > 0) {
+            showSlide(currentSlideIndex - 1, true);
+        }
+        updateUI();
+    }
+    
+    function updateUI() {
+        const progress = ((currentSlideIndex + 1) / slides.length) * 100;
+        progressBar.style.width = `${progress}%`;
+
+        prevBtn.disabled = currentSlideIndex === 0;
+        
+        const currentSlide = slides[currentSlideIndex];
+        const isLastStep = currentSlideIndex === slides.length - 1;
+        const isContentSlideOnContent = currentSlide.classList.contains('slide-conteudo') && currentSlide.dataset.animationState === 'content';
+        
+        if (isLastStep && isContentSlideOnContent) {
+             nextBtn.disabled = true;
+        } else if (isLastStep && !currentSlide.classList.contains('slide-conteudo')) {
+             nextBtn.disabled = true;
+        }
+        else {
+            nextBtn.disabled = false;
+        }
+    }
+
+    function openPrintableView() {
+        const printWindow = window.open('', '_blank');
+        let printContent = `
+            <html><head><title>Resumo para Impressão</title>
+            <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+            <style>
+                body { font-family: 'Roboto', sans-serif; margin: 0; padding: 20px; background-color: #f9f9f9; }
+                h1, h2, h3 { font-family: 'Merriweather', serif; color: #1e52ef; }
+                .print-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 20px; }
+                .print-slide-card { 
+                    border: 1px solid #ccc; padding: 20px; background-color: white; 
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.05); page-break-inside: avoid;
+                    display: flex; flex-direction: column; border-radius: 8px;
+                    border-left: 5px solid #eb580b;
+                }
+                .print-slide-card h2 { 
+                    font-size: 1.2rem; color: #1e52ef;
+                    border-bottom: 2px solid #f7b801; 
+                    padding-bottom: 8px; margin-top: 0; margin-bottom: 15px; 
+                }
+                .print-slide-card ul { list-style-type: disc; padding-left: 20px; }
+                .print-slide-card li, .print-slide-card p { font-size: 0.95rem; line-height: 1.6; }
+                blockquote {
+                    font-family: 'Merriweather', serif; font-style: italic;
+                    border-left: 4px solid #eb580b; padding: 8px 15px; margin: 10px 0;
+                    font-size: 0.9em; color: #555; background-color: #fdf5e8; border-radius: 0 8px 8px 0;
+                }
+                blockquote footer { text-align: right; font-weight: bold; font-style: normal; font-size: 0.9em;}
+                @media print {
+                    body { background-color: white; padding: 0; }
+                    .print-grid { display: block; }
+                    .print-slide-card { box-shadow: none; border: 1px solid #ddd; margin-bottom: 20px; }
+                }
+            </style>
+            </head><body><h1>Resumo da Apresentação: A Natureza e o Fundamento da Igreja</h1><div class="print-grid">
+        `;
+
+        slides.forEach((slide) => {
+            if (slide.classList.contains('slide-capa') || slide.classList.contains('slide-ultimo')) return;
+            
+            const tempNode = slide.cloneNode(true);
+            const title = slide.dataset.title || 'Slide';
+            const contentNode = tempNode.querySelector('.slide-content');
+            
+            if (contentNode) {
+                contentNode.querySelectorAll('.wave-container, .logo-container, .card-icon, .socratic-question').forEach(el => el.remove());
+                let slideTitle = contentNode.querySelector('h2');
+                if (!slideTitle) {
+                    slideTitle = document.createElement('h2');
+                    slideTitle.innerText = title;
+                } else {
+                     slideTitle.remove();
+                }
+                
+                printContent += `<div class="print-slide-card"><h2>${slideTitle.innerText}</h2>${contentNode.querySelector('.text-container').innerHTML}</div>`;
+            }
+        });
+
+        printContent += `</div></body></html>`;
+        printWindow.document.write(printContent);
+        printWindow.document.close();
+        printWindow.focus();
+    }
+
+    nextBtn.addEventListener('click', advance);
+    prevBtn.addEventListener('click', retreat);
+    document.addEventListener('keydown', (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+        if (e.key === 'ArrowRight') advance();
+        if (e.key === 'ArrowLeft') retreat();
+    });
+    
+    if (printBtn) {
+        printBtn.addEventListener('click', openPrintableView);
+    }
+    
+    showSlide(0);
+});
+</script>
+
+</body>
+</html>
