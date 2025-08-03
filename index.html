@@ -52,6 +52,7 @@
             flex-grow: 1; display: flex; flex-direction: column;
             height: 100%;
             position: relative;
+            overflow: hidden; /* Garante que o conteúdo não vaze */
         }
         
         .progress-bar-container {
@@ -105,7 +106,7 @@
             visibility: hidden;
             transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
             display: flex; align-items: center; justify-content: center;
-            overflow: hidden;
+            overflow: auto; /* Permite rolagem em slides com muito conteúdo em telas pequenas */
         }
         .slide.slide-ativo { 
             opacity: 1; transform: scale(1); 
@@ -364,8 +365,15 @@
             margin: 0;
         }
         
+        /* NOVO: Wrapper para a tabela para permitir rolagem horizontal em telas pequenas */
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch; /* Melhora a experiência de rolagem em iOS */
+        }
         .comparison-table {
             width: 100%;
+            min-width: 600px; /* Garante que a tabela tenha uma largura mínima para forçar a rolagem */
             border-collapse: collapse;
             background-color: rgba(255, 255, 255, 0.5);
             border-radius: 12px;
@@ -429,7 +437,7 @@
             box-shadow: var(--sombra-suave);
         }
         #print-btn { background-color: var(--cor-destaque); color: var(--cor-conteudo-texto); }
-       
+        
         /* --- Controles de Navegação --- */
         .nav-buttons {
             position: absolute; 
@@ -447,26 +455,85 @@
         .nav-buttons button:hover { transform: scale(1.1); background-color: #d14e0a; }
         .nav-buttons button:disabled { background-color: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
         
+        /* --- MEDIA QUERIES PARA RESPONSIVIDADE --- */
+
+        /* Tablets e Telas Menores */
         @media (max-width: 1024px) {
             .slide-capa .slide-content { flex-direction: column; }
             .capa-imagem, .capa-texto { width: 100%; height: 50%; padding: 20px; }
-            .capa-texto { align-items: center; text-align: center; }
+            .capa-texto { align-items: center; text-align: center; justify-content: center; }
             .text-container { padding-right: 15px; }
             .wave-container, .logo-container { display: none; }
             .card-container { flex-direction: column; }
             .socratic-question { width: 80%; }
             .slide-conteudo.content-visible .socratic-question { width: calc(100% - 40px); }
         }
+
+        /* Tablets em modo Retrato e Smartphones Maiores */
         @media (max-width: 768px) {
             :root { --altura-rodape: 110px; }
-            #main-footer { flex-direction: column; text-align: center; gap: 10px; height: var(--altura-rodape); padding: 10px; }
+            
+            #main-footer { 
+                flex-direction: column; 
+                text-align: center; 
+                gap: 10px; 
+                height: var(--altura-rodape); 
+                padding: 10px; 
+                justify-content: center;
+            }
+            /* AJUSTE: Empilha as informações de contato no rodapé */
+            #main-footer .contact-info p {
+                flex-direction: column;
+                gap: 5px;
+            }
+            #main-footer .contact-info span {
+                font-size: 0.9rem;
+            }
+
             .nav-buttons { bottom: calc(var(--altura-rodape) + 15px); right: 15px; }
             .slide-com-imagem-final .slide-content { flex-direction: column; }
             .imagem-final-container { width: 100%; height: 40%; }
-            .conteudo-final-container { width: 100%; height: 60%; }
+            .conteudo-final-container { width: 100%; height: 60%; padding: 20px; }
+
             h2 { font-size: clamp(1.8rem, 5vw, 2.2rem); }
-            p, li { font-size: clamp(1rem, 2.5vw, 1.1rem); }
+            p, li { font-size: clamp(1rem, 3.5vw, 1.1rem); }
             .socratic-question { font-size: clamp(1.2rem, 4vw, 1.5rem); }
+            .slide-conteudo { padding: 20px; }
+            .slide-content { padding: 10px; }
+            .qr-code-image { width: 180px; height: 180px; }
+        }
+
+        /* Smartphones */
+        @media (max-width: 480px) {
+            :root { --altura-rodape: 95px; }
+            
+            .slide-capa h1 {
+                font-size: clamp(2.2rem, 10vw, 2.8rem);
+            }
+            .slide-indice .capa-texto ul {
+                font-size: clamp(0.9rem, 3vw, 1rem);
+                line-height: 1.9;
+            }
+            .qr-code-image { width: 150px; height: 150px; }
+            .qr-code-link { font-size: 1rem; padding: 10px 20px; }
+
+            .profile-pic { width: 45px; height: 45px; margin-right: 0; margin-bottom: 5px; }
+            #main-footer .footer-left {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .contact-info p { font-size: 0.85rem; }
+            .presentation-title { font-size: 0.8rem; }
+            
+            .nav-buttons { gap: 10px; }
+            .nav-buttons button { width: 50px; height: 50px; font-size: 1.6rem; }
+
+            .slide-conteudo { padding: 15px; }
+            p, li { font-size: clamp(1rem, 4vw, 1.05rem); }
+            .card p, .card li { font-size: 1rem; }
+            .timeline-content p { font-size: 1rem; }
+            .comparison-table td { font-size: 0.95rem; }
         }
     </style>
 </head>
@@ -828,42 +895,45 @@
                     <p class="socratic-question">Se a Igreja é "gloriosa, sem mácula", por que vemos nela tanta falha e imperfeição?</p>
                     <div class="text-container" style="padding-right: 0;">
                         <h2>A Dupla Característica da Igreja</h2>
-                        <table class="comparison-table">
-                            <thead>
-                                <tr>
-                                    <th>Atributo</th>
-                                    <th>Igreja Invisível</th>
-                                    <th>Igreja Visível</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><strong>Composição</strong></td>
-                                    <td>Apenas os eleitos ("trigo").</td>
-                                    <td>Professos e seus filhos ("trigo e joio").</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Relação com Cristo</strong></td>
-                                    <td>União interna, espiritual e salvífica.</td>
-                                    <td>Relação externa, pactual e professa.</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Visibilidade</strong></td>
-                                    <td>Conhecida perfeitamente por Deus.</td>
-                                    <td>Reconhecida pelos homens.</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Natureza</strong></td>
-                                    <td>Perfeita e santa aos olhos de Deus.</td>
-                                    <td>Imperfeita e militante.</td>
-                                </tr>
-                                 <tr>
-                                    <td><strong>Referência</strong></td>
-                                    <td>Efésios 5:27</td>
-                                    <td>Mateus 13:47</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <!-- MODIFICAÇÃO: Wrapper para a tabela -->
+                        <div class="table-wrapper">
+                            <table class="comparison-table">
+                                <thead>
+                                    <tr>
+                                        <th>Atributo</th>
+                                        <th>Igreja Invisível</th>
+                                        <th>Igreja Visível</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Composição</strong></td>
+                                        <td>Apenas os eleitos ("trigo").</td>
+                                        <td>Professos e seus filhos ("trigo e joio").</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Relação com Cristo</strong></td>
+                                        <td>União interna, espiritual e salvífica.</td>
+                                        <td>Relação externa, pactual e professa.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Visibilidade</strong></td>
+                                        <td>Conhecida perfeitamente por Deus.</td>
+                                        <td>Reconhecida pelos homens.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Natureza</strong></td>
+                                        <td>Perfeita e santa aos olhos de Deus.</td>
+                                        <td>Imperfeita e militante.</td>
+                                    </tr>
+                                     <tr>
+                                        <td><strong>Referência</strong></td>
+                                        <td>Efésios 5:27</td>
+                                        <td>Mateus 13:47</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -952,13 +1022,13 @@
                     <div class="imagem-final-container"><img src="final.jpg" alt="Imagem de encerramento" onerror="this.onerror=null;this.src='https://placehold.co/800x1200/4a4a4a/FFFFFF?text=Soli Deo Gloria';"></div>
                     <div class="conteudo-final-container">
                          <div class="text-container" style="text-align: center; padding-right: 0;">
-                            <h1>Soli Deo Gloria</h1>
-                            <p class="subtitulo">Que Deus preserve e purifique a Sua amada Igreja, até o dia final.</p>
-                            <div class="botoes-finais">
-                                <button id="print-btn" class="btn-final">
-                                    <i class="ph-bold ph-printer"></i> Imprimir Resumo
-                                </button>
-                            </div>
+                             <h1>Soli Deo Gloria</h1>
+                             <p class="subtitulo">Que Deus preserve e purifique a Sua amada Igreja, até o dia final.</p>
+                             <div class="botoes-finais">
+                                 <button id="print-btn" class="btn-final">
+                                     <i class="ph-bold ph-printer"></i> Imprimir Resumo
+                                 </button>
+                             </div>
                         </div>
                     </div>
                 </div>
@@ -969,7 +1039,8 @@
             <div class="footer-left" style="display: flex; align-items: center;">
                 <img src="foto.jpg" class="profile-pic" alt="Foto de perfil do palestrante">
                 <div class="contact-info">
-                    <p><b>Presbítero Rodrigo Niskier</b> <span>| niskier.rodrigo@gmail.com</span></p>
+                    <!-- MODIFICAÇÃO: Removido o "|" para melhor quebra de linha em mobile -->
+                    <p><b>Presbítero Rodrigo Niskier</b> <span>niskier.rodrigo@gmail.com</span></p>
                 </div>
             </div>
             <div class="footer-right">
