@@ -106,7 +106,8 @@
             visibility: hidden;
             transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
             display: flex; align-items: center; justify-content: center;
-            overflow: auto; /* Permite rolagem em slides com muito conteúdo em telas pequenas */
+            overflow: auto; /* Permite rolagem em slides com muito conteúdo */
+            -webkit-overflow-scrolling: touch; /* Rolagem suave em iOS */
         }
         .slide.slide-ativo { 
             opacity: 1; transform: scale(1); 
@@ -365,7 +366,6 @@
             margin: 0;
         }
         
-        /* NOVO: Wrapper para a tabela para permitir rolagem horizontal em telas pequenas */
         .table-wrapper {
             width: 100%;
             overflow-x: auto;
@@ -373,7 +373,7 @@
         }
         .comparison-table {
             width: 100%;
-            min-width: 600px; /* Garante que a tabela tenha uma largura mínima para forçar a rolagem */
+            min-width: 600px;
             border-collapse: collapse;
             background-color: rgba(255, 255, 255, 0.5);
             border-radius: 12px;
@@ -459,9 +459,27 @@
 
         /* Tablets e Telas Menores */
         @media (max-width: 1024px) {
-            .slide-capa .slide-content { flex-direction: column; }
-            .capa-imagem, .capa-texto { width: 100%; height: 50%; padding: 20px; }
-            .capa-texto { align-items: center; text-align: center; justify-content: center; }
+            .slide-capa .slide-content,
+            .slide-com-imagem-final .slide-content { 
+                flex-direction: column; 
+                height: auto;
+                justify-content: flex-start;
+            }
+            .capa-imagem, .capa-texto { 
+                width: 100%; 
+                height: auto;
+                padding: 20px; 
+            }
+            .capa-imagem {
+                max-height: 50vh;
+                flex-shrink: 0;
+            }
+            .capa-texto { 
+                align-items: center; 
+                text-align: center; 
+                justify-content: center; 
+                flex-grow: 1;
+            }
             .text-container { padding-right: 15px; }
             .wave-container, .logo-container { display: none; }
             .card-container { flex-direction: column; }
@@ -473,6 +491,16 @@
         @media (max-width: 768px) {
             :root { --altura-rodape: 110px; }
             
+            /* AJUSTE PRINCIPAL: Permite que o slide cresça e seja rolável */
+            .slide {
+                align-items: flex-start; /* Alinha o conteúdo no topo para rolagem */
+                padding: 20px 15px; /* Espaço interno para o conteúdo não colar nas bordas */
+            }
+            .slide-content, .text-container, .conteudo-final-container .text-container {
+                height: auto; /* Permite que o container de conteúdo cresça */
+                overflow: visible; /* Garante que o conteúdo não seja cortado */
+            }
+
             #main-footer { 
                 flex-direction: column; 
                 text-align: center; 
@@ -481,7 +509,6 @@
                 padding: 10px; 
                 justify-content: center;
             }
-            /* AJUSTE: Empilha as informações de contato no rodapé */
             #main-footer .contact-info p {
                 flex-direction: column;
                 gap: 5px;
@@ -491,15 +518,24 @@
             }
 
             .nav-buttons { bottom: calc(var(--altura-rodape) + 15px); right: 15px; }
-            .slide-com-imagem-final .slide-content { flex-direction: column; }
-            .imagem-final-container { width: 100%; height: 40%; }
-            .conteudo-final-container { width: 100%; height: 60%; padding: 20px; }
+
+            /* Ajusta slides com imagem para serem roláveis */
+            .imagem-final-container { 
+                width: 100%; 
+                height: auto; /* Altura automática baseada na imagem */
+                max-height: 40vh; /* Limita a altura da imagem */
+            }
+            .conteudo-final-container { 
+                width: 100%; 
+                height: auto; /* Altura automática baseada no conteúdo */
+                padding: 20px;
+            }
 
             h2 { font-size: clamp(1.8rem, 5vw, 2.2rem); }
             p, li { font-size: clamp(1rem, 3.5vw, 1.1rem); }
             .socratic-question { font-size: clamp(1.2rem, 4vw, 1.5rem); }
-            .slide-conteudo { padding: 20px; }
-            .slide-content { padding: 10px; }
+            .slide-conteudo { padding: 0; } /* Padding agora está no .slide */
+            .slide-content { padding: 0; width: 100%; } /* Padding agora está no .slide */
             .qr-code-image { width: 180px; height: 180px; }
         }
 
@@ -507,6 +543,8 @@
         @media (max-width: 480px) {
             :root { --altura-rodape: 95px; }
             
+            .slide { padding: 15px 10px; }
+
             .slide-capa h1 {
                 font-size: clamp(2.2rem, 10vw, 2.8rem);
             }
@@ -529,7 +567,6 @@
             .nav-buttons { gap: 10px; }
             .nav-buttons button { width: 50px; height: 50px; font-size: 1.6rem; }
 
-            .slide-conteudo { padding: 15px; }
             p, li { font-size: clamp(1rem, 4vw, 1.05rem); }
             .card p, .card li { font-size: 1rem; }
             .timeline-content p { font-size: 1rem; }
@@ -895,7 +932,6 @@
                     <p class="socratic-question">Se a Igreja é "gloriosa, sem mácula", por que vemos nela tanta falha e imperfeição?</p>
                     <div class="text-container" style="padding-right: 0;">
                         <h2>A Dupla Característica da Igreja</h2>
-                        <!-- MODIFICAÇÃO: Wrapper para a tabela -->
                         <div class="table-wrapper">
                             <table class="comparison-table">
                                 <thead>
@@ -1039,7 +1075,6 @@
             <div class="footer-left" style="display: flex; align-items: center;">
                 <img src="foto.jpg" class="profile-pic" alt="Foto de perfil do palestrante">
                 <div class="contact-info">
-                    <!-- MODIFICAÇÃO: Removido o "|" para melhor quebra de linha em mobile -->
                     <p><b>Presbítero Rodrigo Niskier</b> <span>niskier.rodrigo@gmail.com</span></p>
                 </div>
             </div>
