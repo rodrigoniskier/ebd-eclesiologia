@@ -860,31 +860,18 @@ document.addEventListener('DOMContentLoaded', () => {
     let touchendX = 0;
     
     function handleGesture() {
-        // Calcula a distância do swipe
         const swipeDistance = touchendX - touchstartX;
-        // Define uma sensibilidade mínima para evitar acionamentos acidentais
         const sensitivity = 50; 
-
-        if (swipeDistance < -sensitivity) {
-            // Swipe para a esquerda -> Avança o slide
-            advance();
-        }
-        
-        if (swipeDistance > sensitivity) {
-            // Swipe para a direita -> Retrocede o slide
-            retreat();
-        }
+        if (swipeDistance < -sensitivity) { advance(); }
+        if (swipeDistance > sensitivity) { retreat(); }
     }
 
     presentationContainer.addEventListener('touchstart', e => {
-        // Guarda a posição inicial do toque no eixo X
         touchstartX = e.changedTouches[0].screenX;
     }, { passive: true });
 
     presentationContainer.addEventListener('touchend', e => {
-        // Guarda a posição final do toque no eixo X
         touchendX = e.changedTouches[0].screenX;
-        // Chama a função para processar o gesto
         handleGesture();
     }, { passive: true });
 
@@ -902,75 +889,129 @@ document.addEventListener('DOMContentLoaded', () => {
     if (printButton) {
         printButton.addEventListener('click', () => {
             const printWindow = window.open('', '_blank');
-            
-            // Clona a folha de estilo principal
-            const originalStyles = document.querySelector('style').cloneNode(true);
 
-            // Cria estilos específicos para impressão
+            // 1. Extrai o conteúdo de texto dos slides de conteúdo
+            let printContent = '';
+            slides.forEach(slide => {
+                // Seleciona apenas slides que contêm um título, ignorando capas e índices sem conteúdo principal
+                const titleHeader = slide.querySelector('.title-header h2, .conteudo-final-container h2');
+                const isContentSlide = slide.classList.contains('slide-conteudo') || slide.querySelector('.conteudo-final-container');
+
+                if (isContentSlide && titleHeader) {
+                    let sectionContent = `<section>`;
+                    // Adiciona o título da seção
+                    sectionContent += `<h2>${titleHeader.innerText}</h2>`;
+
+                    // Pega o container de texto principal
+                    const textContainer = slide.querySelector('.text-container');
+                    if (textContainer) {
+                        // Clona para não modificar o original
+                        const cleanContainer = textContainer.cloneNode(true);
+                        // Remove elementos que não são texto puro
+                        cleanContainer.querySelectorAll('.card-icon, i[class*="ph-"]').forEach(el => el.remove());
+                        sectionContent += cleanContainer.innerHTML;
+                    }
+                    sectionContent += `</section><hr>`;
+                    printContent += sectionContent;
+                }
+            });
+
+            // 2. Define os estilos para a janela de impressão, similar ao PDF
             const printStyleSheet = document.createElement('style');
             printStyleSheet.innerHTML = `
                 @media print {
-                    @page {
-                        size: A4 landscape;
-                        margin: 0;
-                    }
-                    body {
-                        -webkit-print-color-adjust: exact !important;
-                        color-adjust: exact !important;
-                    }
+                    @page { size: A4 portrait; margin: 2cm; }
                 }
                 body {
-                    background-color: #fff !important;
-                    height: auto;
+                    font-family: 'Roboto', sans-serif;
+                    line-height: 1.6;
+                    color: #333;
+                    width: 210mm;
+                    margin: 0 auto;
                 }
-                .slide {
-                    width: 100% !important;
-                    height: 100vh !important; /* Um slide por página */
-                    page-break-after: always;
-                    display: flex !important;
-                    opacity: 1 !important;
-                    visibility: visible !important;
-                    position: relative !important;
-                    transform: none !important;
-                    overflow: hidden !important;
-                    box-shadow: none !important;
+                h1, h2, h3, h4 {
+                    font-family: 'Merriweather', serif;
+                    color: #000;
+                    margin-bottom: 0.8em;
+                    line-height: 1.3;
+                    page-break-after: avoid;
                 }
-                .slide:last-of-type {
-                    page-break-after: auto;
+                h1 {
+                    font-size: 22pt;
+                    text-align: left;
+                    margin-bottom: 1.5cm;
+                    font-weight: 700;
                 }
-                .slide-number, #print-button, #mobile-nav-buttons {
+                h2 {
+                    font-size: 16pt;
+                    margin-top: 1.2em;
+                    font-weight: 700;
+                    color: #1e52ef;
+                    border-bottom: 1px solid #ccc;
+                    padding-bottom: 3px;
+                }
+                h2::after { display: none; }
+                h3 {
+                    font-size: 13pt;
+                    font-weight: 700;
+                    color: #000;
+                }
+                p, li {
+                    font-size: 11pt;
+                    margin-bottom: 0.5em;
+                }
+                ul { padding-left: 20px; list-style-type: disc; }
+                blockquote {
+                    font-family: 'Roboto', sans-serif;
+                    font-style: italic;
+                    border-left: 3px solid #ddd;
+                    padding: 0.5em 0 0.5em 1.5em;
+                    margin: 1em 0;
+                    color: #444;
+                    background-color: transparent;
+                    font-size: 11pt;
+                }
+                blockquote footer {
+                    text-align: right; font-weight: normal; font-style: italic;
+                    font-size: 0.9em; margin-top: 0.5em; color: #555;
+                }
+                hr {
+                    border: none;
+                    border-top: 1px dashed #ccc;
+                    margin: 2cm 0;
+                }
+                /* Limpa layouts e elementos visuais desnecessários */
+                .logo-container, .card-icon, .timeline-icon, i[class*="ph-"] {
                     display: none !important;
                 }
+                .title-header { display: block; margin: 0; padding: 0; }
+                .card-container { display: block; margin: 1em 0; }
+                .card {
+                    background: #f9f9f9;
+                    border: 1px solid #eee;
+                    box-shadow: none; padding: 1em; margin-bottom: 1em;
+                }
+                section, .card, blockquote { page-break-inside: avoid; }
             `;
-            
-            // Pega o HTML de todos os slides
-            const slidesHTML = slides.map(slide => {
-                const clone = slide.cloneNode(true);
-                const btn = clone.querySelector('#print-button');
-                if (btn) btn.remove(); // Remove o botão do slide clonado
-                return clone.outerHTML;
-            }).join('');
 
-            // Escreve o conteúdo na nova janela
+            // 3. Monta o documento final
             printWindow.document.head.innerHTML = `
                 <meta charset="UTF-8">
-                <title>Unidade e Santidade da Igreja | Versão para Impressão</title>
+                <title>Resumo: Unidade e Santidade da Igreja</title>
                 <link rel="preconnect" href="https://fonts.googleapis.com">
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
                 <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-                <script src="https://unpkg.com/@phosphor-icons/web"><\/script>
             `;
-            printWindow.document.head.appendChild(originalStyles);
             printWindow.document.head.appendChild(printStyleSheet);
-            printWindow.document.body.innerHTML = slidesHTML;
+            printWindow.document.body.innerHTML = `<h1>Resumo da Apresentação: Unidade e Santidade da Igreja</h1>${printContent}`;
 
-            // Imprime após um pequeno atraso para permitir a renderização
+            // 4. Aciona a impressão
             setTimeout(() => {
                 printWindow.document.close();
                 printWindow.focus();
                 printWindow.print();
                 printWindow.close();
-            }, 1200);
+            }, 500);
         });
     }
 
