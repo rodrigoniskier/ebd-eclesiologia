@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Aulas | Eclesiologia Reformada</title>
+    
+    <!-- FONTES DO GOOGLE -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- BIBLIOTECA DE ÍCONES (PHOSPHOR ICONS) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <style>
+        /* --- Variáveis de Estilo --- */
+        :root {
+            --cor-capa-fundo: #007fc6;
+            --cor-capa-texto: #ffffff;
+            --cor-destaque: #f7b801;
+            --cor-botao-texto: #1e52ef;
+            
+            --sombra-suave: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --sombra-media: 0 10px 20px rgba(0, 0, 0, 0.15);
+            
+            --fonte-titulo: 'Merriweather', serif;
+            --fonte-texto: 'Roboto', sans-serif;
+        }
+
+        /* --- Estilos Globais --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            width: 100%;
+            height: 100vh;
+            font-family: var(--fonte-texto);
+            color: var(--cor-capa-texto);
+            background-color: var(--cor-capa-fundo);
+            overflow: hidden;
+        }
+        
+        /* --- Estrutura Principal (Layout do Slide de Capa) --- */
+        .portal-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: row;
+        }
+
+        .capa-imagem {
+            width: 50%;
+            height: 100%;
+            flex-shrink: 0;
+        }
+
+        .capa-imagem img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .capa-texto {
+            width: 50%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 5%;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: var(--fonte-titulo);
+            font-size: clamp(3rem, 5vw, 4.5rem);
+            color: var(--cor-capa-texto);
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+            margin-bottom: 40px;
+        }
+
+        /* --- Grade de Botões das Aulas --- */
+        .aulas-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .aula-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--cor-destaque);
+            color: var(--cor-botao-texto);
+            padding: 15px 10px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-family: var(--fonte-titulo);
+            font-weight: 700;
+            font-size: clamp(1rem, 1.5vw, 1.2rem);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: var(--sombra-suave);
+            border: none;
+            cursor: pointer;
+        }
+        
+        .aula-button:hover {
+            transform: scale(1.05);
+            box-shadow: var(--sombra-media);
+        }
+
+        .aula-button i {
+            margin-right: 8px;
+            font-size: 1.2em;
+        }
+
+        /* --- Responsividade --- */
+        @media (max-width: 1024px) {
+            .portal-container {
+                flex-direction: column;
+            }
+            .capa-imagem {
+                width: 100%;
+                height: 40%; /* Menor altura para a imagem em telas pequenas */
+            }
+            .capa-texto {
+                width: 100%;
+                height: 60%;
+                justify-content: center;
+            }
+            .aulas-grid {
+                grid-template-columns: repeat(2, 1fr); /* 2 colunas em telas menores */
+                max-width: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="portal-container">
+    <!-- Coluna da Imagem -->
+    <div class="capa-imagem">
+        <img src="capa.jpg" alt="Imagem de uma igreja histórica com vitrais" onerror="this.onerror=null;this.src='https://placehold.co/800x1200/007fc6/FFFFFF?text=Igreja';">
+    </div>
+    
+    <!-- Coluna do Conteúdo e Botões -->
+    <div class="capa-texto">
+        <h1>Portal de Aulas</h1>
+        
+        <div class="aulas-grid">
+            <!-- Os links apontam para os arquivos HTML de cada aula -->
+            <a href="index1.html" class="aula-button"><i class="ph-bold ph-chalkboard-teacher"></i>Aula 1</a>
+            <a href="index2.html" class="aula-button"><i class="ph-bold ph-chalkboard-teacher"></i>Aula 2</a>
+            <a href="index3.html" class="aula-button"><i class="ph-bold ph-chalkboard-teacher"></i>Aula 3</a>
+            <a href="index4.html" class="aula-button"><i class="ph-bold ph-chalkboard-teacher"></i>Aula 4</a>
+            <a href="index5.html" class="aula-button"><i class="ph-bold ph-chalkboard-teacher"></i>Aula 5</a>
+            <a href="index6.html" class="aula-button"><i class="ph-bold ph-chalkboard-teacher"></i>Aula 6</a>
+            <a href="index7.html" class="aula-button"><i class="ph-bold ph-chalkboard-teacher"></i>Aula 7</a>
+            <a href="index8.html" class="aula-button"><i class="ph-bold ph-chalkboard-teacher"></i>Aula 8</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
