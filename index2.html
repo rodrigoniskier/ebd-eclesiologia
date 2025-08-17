@@ -318,6 +318,37 @@
             font-weight: 400; text-align: center;
         }
 
+        /* --- Botões de Navegação Mobile --- */
+        #mobile-nav-buttons {
+            display: none; /* Escondido por padrão em telas maiores */
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            gap: 25px;
+        }
+
+        #mobile-nav-buttons button {
+            background-color: var(--cor-rodape-menu);
+            color: var(--cor-capa-texto);
+            border: none;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--sombra-media);
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        #mobile-nav-buttons button:active {
+            transform: scale(0.95);
+        }
+
         /* --- MEDIA QUERIES PARA RESPONSIVIDADE --- */
         @media (max-width: 1024px) {
             .slide { overflow: auto; padding: 20px; }
@@ -329,6 +360,11 @@
             .card-container { flex-direction: column; gap: 15px; }
             .title-header { flex-direction: column; align-items: flex-start; gap: 15px; }
             p, li { font-size: clamp(1.4rem, 4vw, 1.8rem); }
+
+            /* Mostra os botões de navegação em telas menores */
+            #mobile-nav-buttons {
+                display: flex;
+            }
         }
 
     </style>
@@ -772,6 +808,12 @@
             </section>
 
         </main>
+        
+        <!-- Botões de Navegação Mobile -->
+        <div id="mobile-nav-buttons">
+            <button id="prev-button" aria-label="Slide Anterior"><i class="ph-bold ph-arrow-left"></i></button>
+            <button id="next-button" aria-label="Próximo Slide"><i class="ph-bold ph-arrow-right"></i></button>
+        </div>
     </div>
 </div>
 
@@ -813,7 +855,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- NOVA FUNCIONALIDADE: NAVEGAÇÃO POR TOQUE (SWIPE) ---
+    // --- NAVEGAÇÃO POR TOQUE (SWIPE) ---
     let touchstartX = 0;
     let touchendX = 0;
     
@@ -845,6 +887,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // Chama a função para processar o gesto
         handleGesture();
     }, { passive: true });
+
+    // --- NAVEGAÇÃO PELOS BOTÕES MOBILE ---
+    const prevButton = document.getElementById('prev-button');
+    const nextButton = document.getElementById('next-button');
+
+    if (prevButton && nextButton) {
+        prevButton.addEventListener('click', retreat);
+        nextButton.addEventListener('click', advance);
+    }
     
     // --- FUNCIONALIDADE DE IMPRESSÃO ---
     const printButton = document.getElementById('print-button');
@@ -887,7 +938,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 .slide:last-of-type {
                     page-break-after: auto;
                 }
-                .slide-number, #print-button {
+                .slide-number, #print-button, #mobile-nav-buttons {
                     display: none !important;
                 }
             `;
