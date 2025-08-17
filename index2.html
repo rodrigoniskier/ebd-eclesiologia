@@ -777,6 +777,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    const presentationContainer = document.getElementById('presentation-container');
     const slides = Array.from(document.querySelectorAll('.slide'));
     let currentSlideIndex = 0;
 
@@ -799,6 +800,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
+    // --- NAVEGAÇÃO POR TECLADO ---
     document.addEventListener('keydown', (e) => {
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
         if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
@@ -810,6 +812,39 @@ document.addEventListener('DOMContentLoaded', () => {
             retreat();
         }
     });
+
+    // --- NOVA FUNCIONALIDADE: NAVEGAÇÃO POR TOQUE (SWIPE) ---
+    let touchstartX = 0;
+    let touchendX = 0;
+    
+    function handleGesture() {
+        // Calcula a distância do swipe
+        const swipeDistance = touchendX - touchstartX;
+        // Define uma sensibilidade mínima para evitar acionamentos acidentais
+        const sensitivity = 50; 
+
+        if (swipeDistance < -sensitivity) {
+            // Swipe para a esquerda -> Avança o slide
+            advance();
+        }
+        
+        if (swipeDistance > sensitivity) {
+            // Swipe para a direita -> Retrocede o slide
+            retreat();
+        }
+    }
+
+    presentationContainer.addEventListener('touchstart', e => {
+        // Guarda a posição inicial do toque no eixo X
+        touchstartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    presentationContainer.addEventListener('touchend', e => {
+        // Guarda a posição final do toque no eixo X
+        touchendX = e.changedTouches[0].screenX;
+        // Chama a função para processar o gesto
+        handleGesture();
+    }, { passive: true });
     
     // --- FUNCIONALIDADE DE IMPRESSÃO ---
     const printButton = document.getElementById('print-button');
