@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Vocação da Igreja | Eclesiologia Reformada</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <style>
+        :root {
+            /* Cores principais */
+            --cor-capa-fundo: #007fc6;
+            --cor-capa-texto: #ffffff;
+            --cor-conteudo-fundo: #fcdccd;
+            --cor-conteudo-texto: #1e52ef;
+            --cor-rodape-menu: #eb580b;
+            --cor-destaque: #f7b801;
+            
+            --sombra-suave: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --sombra-media: 0 10px 20px rgba(0, 0, 0, 0.15);
+            
+            --fonte-titulo: 'Merriweather', serif;
+            --fonte-texto: 'Roboto', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            width: 100%;
+            height: 100vh;
+            font-family: var(--fonte-texto);
+            color: var(--cor-conteudo-texto);
+            background-color: var(--cor-conteudo-fundo);
+            overflow: hidden;
+        }
+        
+        #presentation-frame {
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            position: relative;
+        }
+
+        #content-wrapper {
+            flex-grow: 1; display: flex; flex-direction: column;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #presentation-container { 
+            flex-grow: 1; position: relative; overflow: hidden; 
+            height: 100%;
+        }
+
+        /* --- Estrutura dos Slides --- */
+        .slide {
+            width: 100%; height: 100%; position: absolute; 
+            opacity: 0; transform: scale(0.98);
+            visibility: hidden;
+            transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+            padding: 2vh 2vw;
+        }
+        .slide.slide-ativo { 
+            opacity: 1; transform: scale(1); 
+            visibility: visible; z-index: 10; 
+        }
+        
+        .slide-number {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--cor-conteudo-texto);
+            opacity: 0.5;
+            z-index: 20;
+        }
+
+        .slide-capa .slide-number,
+        .slide-ultimo .slide-number {
+            color: var(--cor-capa-texto);
+        }
+
+        /* --- Slides de Capa e Índice --- */
+        .slide-capa {
+            background-color: var(--cor-capa-fundo); color: var(--cor-capa-texto);
+            padding: 0;
+        }
+        .slide-capa .slide-content {
+            flex-direction: row; width: 100%; height: 100%;
+            padding: 0; gap: 0; max-width: none;
+        }
+        .capa-imagem {
+            width: 50%; height: 100%;
+            flex-shrink: 0;
+        }
+        .capa-imagem img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+        .capa-texto {
+            width: 50%; height: 100%;
+            display: flex; flex-direction: column;
+            align-items: flex-start; justify-content: center;
+            padding: 5%; text-align: left;
+        }
+        .slide-capa h1 {
+            font-size: clamp(4.2rem, 8vw, 7rem);
+            color: var(--cor-capa-texto);
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+        }
+        .qr-code-container {
+            margin-top: 30px;
+            display: inline-block;
+            text-align: center;
+        }
+        .qr-code-image {
+            width: 180px;
+            height: 180px;
+            display: block;
+            margin: 0 auto 15px;
+            border-radius: 15px;
+            background-color: white;
+            padding: 10px;
+            box-shadow: var(--sombra-media);
+        }
+        .qr-code-link {
+            display: inline-block;
+            background-color: var(--cor-destaque);
+            color: var(--cor-conteudo-texto);
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-family: var(--fonte-titulo);
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: transform 0.3s ease;
+            box-shadow: var(--sombra-suave);
+            border: none;
+            cursor: pointer;
+        }
+        .slide-indice .capa-texto { 
+            justify-content: center; 
+        }
+        .slide-indice .capa-texto h1 {
+            font-size: clamp(2.8rem, 5vw, 3.8rem);
+            margin-bottom: 1.5rem;
+        }
+        .slide-indice .capa-texto ul {
+            list-style: none; padding: 0;
+            font-size: clamp(1.2rem, 1.8vw, 1.6rem);
+            line-height: 2.2;
+        }
+        .slide-indice ul strong { color: var(--cor-destaque); }
+        .slide-indice ul li.aula-atual strong {
+            color: #fff;
+            background-color: var(--cor-rodape-menu);
+            padding: 2px 8px;
+            border-radius: 5px;
+        }
+        .slide-indice .capa-texto ul i {
+            margin-right: 8px;
+            vertical-align: middle;
+            font-size: 1.2em;
+        }
+
+        /* --- Slides de Conteúdo --- */
+        .slide-conteudo {
+            background-color: var(--cor-conteudo-fundo);
+            color: var(--cor-conteudo-texto);
+        }
+        .slide-content { 
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            gap: 20px; align-items: center; justify-content: flex-start;
+            position: relative; z-index: 5;
+            padding: 1vh 1vw;
+        }
+        .text-container {
+            width: 100%;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 2vw;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .logo-container {
+            width: 80px; height: 80px;
+            background-color: #fff; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: var(--sombra-media);
+            flex-shrink: 0;
+        }
+        .logo-container img {
+            width: 90%; height: 90%;
+            object-fit: contain; border-radius: 50%;
+        }
+
+        .title-header {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 2vh;
+            position: relative;
+            padding: 1vh 2vw;
+            flex-shrink: 0;
+        }
+
+        h2 { 
+            font-family: var(--fonte-titulo); color: var(--cor-conteudo-texto); 
+            font-size: clamp(3.2rem, 5vw, 4.5rem);
+            position: relative; 
+            padding-bottom: 10px; font-weight: 700;
+            text-align: left;
+            margin: 0;
+        }
+        h2::after {
+            content: ''; position: absolute; bottom: 0; left: 0;
+            width: 80px; height: 5px;
+            background-color: var(--cor-rodape-menu); 
+            border-radius: 5px;
+        }
+        p, li { 
+            font-size: clamp(1.8rem, 2.8vw, 2.3rem);
+            line-height: 1.6; margin-bottom: 1.5vh;
+        }
+        blockquote {
+            font-family: var(--fonte-titulo); font-style: italic;
+            border-left: 5px solid var(--cor-rodape-menu);
+            padding: 1.5vh 1.5vw; margin: 2vh 0;
+            font-size: clamp(1.9rem, 2.5vw, 2.4rem);
+            color: #444;
+            background-color: rgba(255,255,255,0.5);
+            border-radius: 0 8px 8px 0;
+        }
+        blockquote footer { text-align: right; font-weight: bold; font-style: normal; font-size: 0.9em; margin-top: 1vh;}
+
+        .card-container {
+            display: flex; gap: 2vw; width: 100%;
+            align-items: stretch; justify-content: center;
+        }
+        .card {
+            background-color: rgba(255, 255, 255, 0.65);
+            border-radius: 15px; padding: 2.5vh 1.5vw;
+            box-shadow: var(--sombra-suave); flex: 1;
+            display: flex; flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: var(--sombra-media); }
+        .card-icon { font-size: 4rem; color: var(--cor-rodape-menu); margin-bottom: 1.5vh; }
+        .card h3 {
+            font-family: var(--fonte-titulo); font-size: clamp(2rem, 2.6vw, 2.4rem);
+            margin-bottom: 1.5vh; color: var(--cor-conteudo-texto);
+        }
+        .card p, .card li { font-size: clamp(1.6rem, 2.2vw, 1.9rem); line-height: 1.6; margin-bottom: 1vh; }
+        .card ul { padding-left: 30px; list-style: decimal; }
+        
+        /* Slide Final e de Aplicações */
+        .slide-com-imagem-final { padding: 0; }
+        .slide-com-imagem-final .slide-content {
+            flex-direction: row; max-width: none;
+            width: 100%; height: 100%;
+            padding: 0; gap: 0;
+        }
+        .imagem-final-container { width: 33.33%; height: 100%; flex-shrink: 0; }
+        .imagem-final-container img { width: 100%; height: 100%; object-fit: cover; }
+        .conteudo-final-container {
+            width: 66.67%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            padding: 40px; position: relative;
+            background-color: var(--cor-conteudo-fundo);
+        }
+        .conteudo-final-container .text-container {
+            padding-right: 0; max-height: 90%; opacity: 1; transform: none;
+        }
+        .aplicacoes .card h3 { font-size: clamp(1.8rem, 2.2vw, 2.1rem); }
+        .aplicacoes .card p { font-size: clamp(1.5rem, 2vw, 1.7rem); }
+        
+        .slide-ultimo { background-color: var(--cor-capa-fundo); color: var(--cor-capa-texto); }
+        .slide-ultimo .conteudo-final-container { background-color: var(--cor-capa-fundo); }
+        .slide-ultimo h1 {
+            color: var(--cor-capa-texto); text-align: center;
+            font-size: clamp(4rem, 8vw, 7rem); font-weight: 700;
+            text-shadow: 3px 3px 15px rgba(0,0,0,0.3);
+        }
+        .slide-ultimo .subtitulo {
+            font-size: clamp(1.6rem, 2.8vw, 2.2rem); max-width: 850px; 
+            margin: 25px auto 0; color: rgba(255, 255, 255, 0.95); 
+            font-weight: 400; text-align: center;
+        }
+
+        /* --- Botões de Navegação Mobile --- */
+        #mobile-nav-buttons {
+            display: none;
+            position: fixed; bottom: 20px; left: 50%;
+            transform: translateX(-50%); z-index: 1000; gap: 25px;
+        }
+        #mobile-nav-buttons button {
+            background-color: var(--cor-rodape-menu); color: var(--cor-capa-texto);
+            border: none; width: 55px; height: 55px; border-radius: 50%;
+            font-size: 1.8rem; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: var(--sombra-media);
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+        #mobile-nav-buttons button:active { transform: scale(0.95); }
+
+        /* --- MEDIA QUERIES PARA RESPONSIVIDADE --- */
+        @media (max-width: 1024px) {
+            .slide { overflow: auto; padding: 20px; }
+            .slide-capa .slide-content, .slide-com-imagem-final .slide-content { flex-direction: column; }
+            .capa-imagem, .capa-texto { width: 100%; height: 50%; padding: 20px; }
+            .capa-texto { align-items: center; text-align: center; justify-content: center; }
+            .imagem-final-container { width: 100%; height: 40%; }
+            .conteudo-final-container { width: 100%; height: 60%; padding: 20px; }
+            .card-container { flex-direction: column; gap: 15px; }
+            .title-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            p, li { font-size: clamp(1.6rem, 4.5vw, 1.9rem); }
+            h2 { font-size: clamp(2.5rem, 6vw, 3.2rem); }
+            #mobile-nav-buttons { display: flex; }
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="presentation-frame">
+    <div id="content-wrapper">
+        <main id="presentation-container">
+            
+            <section class="slide slide-capa slide-ativo" data-title="Capa">
+                <span class="slide-number">1</span>
+                <div class="slide-content">
+                    <div class="capa-imagem"><img src="capa.jpg" alt="Imagem de uma igreja histórica com vitrais" onerror="this.onerror=null;this.src='https.placehold.co/800x1200/007fc6/FFFFFF?text=Igreja';"></div>
+                    <div class="capa-texto" style="align-items: center; text-align: center;">
+                        <h1>A Vocação da Igreja</h1>
+                        <div class="qr-code-container">
+                            <img src="qrcode.png" alt="QR Code para o material de apoio" class="qr-code-image" onerror="this.onerror=null;this.src='https.placehold.co/180x180/ffffff/333333?text=QR+Code';">
+                            <a href="#" class="qr-code-link">Acessar Material</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide slide-capa slide-indice" data-title="Índice do Semestre">
+                <span class="slide-number">2</span>
+                <div class="slide-content">
+                    <div class="capa-imagem"><img src="capa.jpg" alt="Imagem decorativa para o índice" onerror="this.onerror=null;this.src='https.placehold.co/800x1200/007fc6/FFFFFF?text=Índice';"></div>
+                    <div class="capa-texto">
+                        <h1>Índice de Aulas</h1>
+                        <ul>
+                            <li><strong>1. A NATUREZA E O FUNDAMENTO DA IGREJA</strong> - (03/08)</li>
+                            <li><strong>2. A UNIDADE E A SANTIDADE DA IGREJA</strong> - (10/08)</li>
+                            <li class="aula-atual"><strong>3. A VOCAÇÃO E A MISSÃO DA IGREJA</strong> - (17/08)</li>
+                            <li><strong>4. AS MARCAS DA IGREJA</strong> - (24/08)</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide slide-conteudo" data-title="O Que é a Igreja?">
+                <span class="slide-number">3</span>
+                <div class="slide-content">
+                    <div class="title-header">
+                        <div class="logo-container"><img src="logo.jpg" alt="Logo da Igreja" onerror="this.onerror=null;this.src='https.placehold.co/150x150/EB580B/FFFFFF?text=IPA';"></div>
+                        <h2>Introdução: Natureza e Fundamento</h2>
+                    </div>
+                    <div class="text-container">
+                        <div class="card-container">
+                            <div class="card">
+                                <i class="ph-bold ph-church card-icon"></i>
+                                <h3>Instituição Divina</h3>
+                                <p>A Igreja não é uma criação humana, mas uma instituição divina, fundada por Cristo e sustentada pelo Espírito. Ela é o Corpo de Cristo (Ef 1.22-23), Templo do Espírito (Ef 2.21-22) e a Esposa do Cordeiro (Ap 21.2).</p>
+                            </div>
+                            <div class="card">
+                                <i class="ph-bold ph-anchor-simple card-icon"></i>
+                                <h3>Fundamento em Cristo</h3>
+                                <p>Seu único fundamento é Jesus Cristo (1 Co 3.11). A autoridade da Igreja, sua missão e suas ordenanças derivam diretamente dEle, conforme normatizado pela Palavra de Deus.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="slide slide-conteudo" data-title="Atributos Essenciais">
+                <span class="slide-number">4</span>
+                <div class="slide-content">
+                    <div class="title-header">
+                        <div class="logo-container"><img src="logo.jpg" alt="Logo da Igreja" onerror="this.onerror=null;this.src='https.placehold.co/150x150/EB580B/FFFFFF?text=IPA';"></div>
+                        <h2>Introdução: Unidade e Santidade</h2>
+                    </div>
+                    <div class="text-container">
+                        <div class="card-container">
+                            <div class="card">
+                                <i class="ph-bold ph-link card-icon"></i>
+                                <h3>Unidade Orgânica</h3>
+                                <p>A Igreja é una por uma união espiritual real: todos os que estão unidos a Cristo pela fé estão unidos uns aos outros. É um dom de Deus, não uma construção humana (Jo 17.21).</p>
+                            </div>
+                            <div class="card">
+                                <i class="ph-bold ph-shield-check card-icon"></i>
+                                <h3>Chamado à Santidade</h3>
+                                <p>Ela foi escolhida "para ser santa e irrepreensível" (Ef 1.4). Essa santidade deve se manifestar na pureza da doutrina, na disciplina fiel, na adoração reverente e na vida transformada de seus membros.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide slide-capa slide-indice" data-title="Tópicos da Aula">
+                <span class="slide-number">5</span>
+                <div class="slide-content">
+                    <div class="capa-imagem"><img src="capa.jpg" alt="Mapa conceitual ou quadro branco com anotações" onerror="this.onerror=null;this.src='https.placehold.co/800x1200/007fc6/FFFFFF?text=Tópicos';"></div>
+                    <div class="capa-texto">
+                        <h1 style="font-size: clamp(2.2rem, 4vw, 3rem);">Nossa Vocação Como Igreja</h1>
+                        <ul style="line-height: 2.3; font-size: clamp(1.1rem, 1.6vw, 1.4rem);">
+                            <li><i class="ph-bold ph-megaphone"></i> <strong>PROCLAMAR</strong> a Verdade de Cristo</li>
+                            <li><i class="ph-bold ph-hands-helping"></i> <strong>SERVIR</strong> com o Amor de Cristo</li>
+                            <li><i class="ph-bold ph-hands-praying"></i> <strong>ADORAR</strong> na Beleza de Cristo</li>
+                            <li><i class="ph-bold ph-globe"></i> <strong>VIVER</strong> para a Glória de Cristo</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide slide-conteudo" data-title="Autoridade do Ministério">
+                <span class="slide-number">6</span>
+                <div class="slide-content">
+                    <div class="title-header">
+                        <div class="logo-container"><img src="logo.jpg" alt="Logo da Igreja" onerror="this.onerror=null;this.src='https.placehold.co/150x150/EB580B/FFFFFF?text=IPA';"></div>
+                        <h2>1. Proclamação: A Autoridade do Ministério</h2>
+                    </div>
+                    <div class="text-container">
+                        <p>Os ministros recebem sua autoridade de Cristo, o Cabeça da Igreja, não primariamente da congregação. Eles são chamados para ofícios específicos:</p>
+                        <div class="card-container">
+                           <div class="card">
+                                <h3>Embaixadores de Cristo</h3>
+                                <p>Falam em nome dAquele que os enviou, com a mensagem da reconciliação (2 Co 5.20).</p>
+                           </div>
+                           <div class="card">
+                                <h3>Mordomos de Deus</h3>
+                                <p>Administram fielmente os "mistérios de Deus", ou seja, a verdade revelada na Palavra (1 Co 4.1).</p>
+                           </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide slide-conteudo" data-title="Centralidade da Pregação">
+                <span class="slide-number">7</span>
+                <div class="slide-content">
+                    <div class="title-header">
+                        <div class="logo-container"><img src="logo.jpg" alt="Logo da Igreja" onerror="this.onerror=null;this.src='https.placehold.co/150x150/EB580B/FFFFFF?text=IPA';"></div>
+                        <h2>1. Proclamação: A Centralidade da Pregação</h2>
+                    </div>
+                    <div class="text-container">
+                        <blockquote>"Os puritanos acreditavam que a pregação da Palavra é o principal meio de salvação. Por meio dela, o Espírito convence os pecadores da necessidade que eles têm de Cristo e os leva à fé salvadora."<footer>Beeke & Jones, Teologia Puritana</footer></blockquote>
+                        <p>Portanto, a pregação fiel não é apenas um discurso, mas um meio de graça divinamente ordenado para a edificação e preservação dos crentes.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide slide-conteudo" data-title="Proclamação Externa">
+                <span class="slide-number">8</span>
+                <div class="slide-content">
+                    <div class="title-header">
+                        <div class="logo-container"><img src="logo.jpg" alt="Logo da Igreja" onerror="this.onerror=null;this.src='https.placehold.co/150x150/EB580B/FFFFFF?text=IPA';"></div>
+                        <h2>1. Proclamação: Testemunho ao Mundo</h2>
+                    </div>
+                    <div class="text-container">
+                        <div class="card-container">
+                            <div class="card">
+                                <h3><i class="ph-bold ph-shield-plus card-icon"></i> Coluna da Verdade</h3>
+                                <p>A Igreja é "coluna e baluarte da verdade" (1 Tm 3.15). Deve proclamar o evangelho a toda criatura (Mc 16.15), anunciando todo o desígnio de Deus (At 20.27).</p>
+                            </div>
+                            <div class="card">
+                                <h3><i class="ph-bold ph-shield-warning card-icon"></i> Dever Profético</h3>
+                                <p>Sua vocação inclui a denúncia de erros e heresias. Omitir-se diante do erro é comprometer seu testemunho e a fidelidade a Cristo, pois a verdadeira paz só existe na verdade.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide slide-conteudo" data-title="Serviço Interno">
+                <span class="slide-number">9</span>
+                <div class="slide-content">
+                    <div class="title-header">
+                        <div class="logo-container"><img src="logo.jpg" alt="Logo da Igreja" onerror="this.onerror=null;this.src='https.placehold.co/150x150/EB580B/FFFFFF?text=IPA';"></div>
+                        <h2>2. Serviço: Edificação do Corpo</h2>
+                    </div>
+                    <div class="text-container">
+                        <p>Cristo constituiu ofícios para "o aperfeiçoamento dos santos para o desempenho do seu serviço, para a edificação do corpo de Cristo" (Ef 4.11–12). Este serviço inclui:</p>
+                        <div class="card-container">
+                            <div class="card">
+                                <h3>Ensino e Sacramentos</h3>
+                                <p>O ensino regular da Palavra e a administração fiel do Batismo e da Ceia do Senhor nutrem a fé dos crentes.</p>
+                            </div>
+                            <div class="card">
+                                <h3>Disciplina Eclesiástica</h3>
+                                <p>Visa à restauração do pecador, à pureza da Igreja e à honra de Cristo. É a "cerca que protege o jardim do Senhor".</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide slide-conteudo" data-title="Serviço Externo">
+                <span class="slide-number">10</span>
+                <div class="slide-content">
+                    <div class="title-header">
+                        <div class="logo-container"><img src="logo.jpg" alt="Logo da Igreja" onerror="this.onerror=null;this.src='https.placehold.co/150x150/EB580B/FFFFFF?text=IPA';"></div>
+                        <h2>2. Serviço: Testemunho e Missão</h2>
+                    </div>
+                    <div class="text-container">
+                         <div class="card-container">
+                            <div class="card">
+                                <h3><i class="ph-bold ph-lightbulb card-icon"></i> Sal e Luz</h3>
+                                <p>A Igreja é chamada a ser sal da terra e luz do mundo (Mt 5.13–16), agindo como um protesto contínuo contra a impiedade e sustentando a bandeira da verdade divina.</p>
+                            </div>
+                            <div class="card">
+                                <h3><i class="ph-bold ph-compass card-icon"></i> Instrumento de Reconciliação</h3>
+                                <p>É enviada ao mundo com a mensagem de reconciliação (2 Co 5.18–19), expressando um zelo missionário que se fundamenta na oração pela glória de Deus entre as nações.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide slide-conteudo" data-title="Adoração">
+                <span class="slide-number">11</span>
+                <div class="slide-content">
+                    <div class="title-header">
+                        <div class="logo-container"><img src="logo.jpg" alt="Logo da Igreja" onerror="this.onerror=null;this.src='https.placehold.co/150x150/EB580B/FFFFFF?text=IPA';"></div>
+                        <h2>3. Adoração: O Princípio Regulador</h2>
+                    </div>
+                    <div class="text-container">
+                        <p>A adoração pública na tradição reformada é governada pelo Princípio Regulador do Culto.</p>
+                        <blockquote>“A questão para os puritanos não era ‘O que as Escrituras proíbem?’, mas sim ‘O que as Escrituras instituem?’”<footer>Beeke & Jones, Teologia Puritana</footer></blockquote>
+                        <p>Isso significa que só podem ser incluídos na adoração os elementos que Deus expressamente ordenou em Sua Palavra. A devoção privada, embora vital, não substitui o culto corporativo.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="slide slide-conteudo" data-title="Elementos da Adoração">
+                <span class="slide-number">12</span>
+                <div class="slide-content">
+                    <div class="title-header">
+                        <div class="logo-container"><img src="logo.jpg" alt="Logo da Igreja" onerror="this.onerror=null;this.src='https.placehold.co/150x150/EB580B/FFFFFF?text=IPA';"></div>
+                        <h2>3. Adoração: Elementos do Culto</h2>
+                    </div>
+                    <div class="text-container">
+                        <div class="card-container">
+                             <div class="card">
+                                <h3><i class="ph-bold ph-hands-praying card-icon" style="font-size: 2.5rem;"></i> Oração</h3>
+                                <p>A Deus Pai, em nome de Cristo, com auxílio do Espírito (Jo 14.13, Rm 8.26).</p>
+                            </div>
+                             <div class="card">
+                                <h3><i class="ph-bold ph-book-open-text card-icon" style="font-size: 2.5rem;"></i> Palavra</h3>
+                                <p>Leitura e Pregação, pois “a fé vem pelo ouvir” (Rm 10.17; 1 Tm 4.13).</p>
+                            </div>
+                            <div class="card">
+                                <h3><i class="ph-bold ph-music-notes card-icon" style="font-size: 2.5rem;"></i> Louvor</h3>
+                                <p>Salmos, hinos e cânticos espirituais (Cl 3.16). É uma expressão doutrinária.</p>
+                            </div>
+                        </div>
+                        <div class="card-container" style="margin-top: 2vh;">
+                            <div class="card">
+                                <h3><i class="ph-bold ph-drop card-icon" style="font-size: 2.5rem;"></i> Sacramentos</h3>
+                                <p>Batismo e Ceia do Senhor, que comunicam e selam a graça de Deus.</p>
+                            </div>
+                            <div class="card">
+                                <h3><i class="ph-bold ph-gift card-icon" style="font-size: 2.5rem;"></i> Ofertas</h3>
+                                <p>Para o sustento da igreja e o socorro aos necessitados (1 Co 16.1-2).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="slide slide-conteudo" data-title="Marcas da Igreja">
+                <span class="slide-number">13</span>
+                <div class="slide-content">
+                    <div class="title-header">
+                        <div class="logo-container"><img src="logo.jpg" alt="Logo da Igreja" onerror="this.onerror=null;this.src='https.placehold.co/150x150/EB580B/FFFFFF?text=IPA';"></div>
+                        <h2>As Marcas da Verdadeira Igreja</h2>
+                    </div>
+                    <div class="text-container">
+                        <p>A tradição reformada identifica a verdadeira Igreja visível por três marcas essenciais:</p>
+                         <div class="card-container">
+                            <div class="card">
+                                <h3>1. Fiel Pregação da Palavra</h3>
+                                <p>Onde a Palavra de Deus é pregada de forma pura e fiel.</p>
+                            </div>
+                            <div class="card">
+                                <h3>2. Correta Administração dos Sacramentos</h3>
+                                <p>Onde o Batismo e a Ceia são ministrados conforme a instituição de Cristo.</p>
+                            </div>
+                             <div class="card">
+                                <h3>3. Exercício Fiel da Disciplina</h3>
+                                <p>Onde a santidade da comunidade é preservada pelo cuidado pastoral e pela disciplina.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="slide slide-conteudo" data-title="Vocação Cultural">
+                <span class="slide-number">14</span>
+                <div class="slide-content">
+                    <div class="title-header">
+                        <div class="logo-container"><img src="logo.jpg" alt="Logo da Igreja" onerror="this.onerror=null;this.src='https.placehold.co/150x150/EB580B/FFFFFF?text=IPA';"></div>
+                        <h2>4. Viver: Vocação Cultural e Cósmica</h2>
+                    </div>
+                    <div class="text-container">
+                        <p>A Igreja forma discípulos chamados a viver sob o senhorio de Cristo em todas as esferas da vida: família, trabalho, ciência e sociedade.</p>
+                        <blockquote>"Cada vocação legítima é um 'chamado santo', um posto designado por Deus no qual o cristão deve servi-Lo fielmente."<footer>William Perkins, A Treatise of the Vocations</footer></blockquote>
+                        <p>Nossa missão é levar "cativo todo pensamento à obediência de Cristo" (2 Co 10.5), aplicando a fé a todas as áreas da existência.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="slide slide-conteudo" data-title="Comunidade Peregrina">
+                <span class="slide-number">15</span>
+                <div class="slide-content">
+                    <div class="title-header">
+                        <div class="logo-container"><img src="logo.jpg" alt="Logo da Igreja" onerror="this.onerror=null;this.src='https.placehold.co/150x150/EB580B/FFFFFF?text=IPA';"></div>
+                        <h2>4. Viver: Comunidade Peregrina</h2>
+                    </div>
+                    <div class="text-container">
+                        <div class="card-container">
+                            <div class="card">
+                                <h3><i class="ph-bold ph-hourglass-high card-icon"></i> O "Já e o Ainda Não"</h3>
+                                <p>A Igreja vive na tensão entre o Reino inaugurado por Cristo e sua consumação futura. Já somos santos em Cristo, mas ainda lutamos contra o pecado.</p>
+                            </div>
+                            <div class="card">
+                                <h3><i class="ph-bold ph-map-trifold card-icon"></i> Mentalidade Peregrina</h3>
+                                <p>Vivemos no mundo como "estrangeiros e peregrinos", com os corações e as esperanças fixos na pátria celestial (Hb 11.13-16), o que nos protege do mundanismo.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide slide-com-imagem-final" data-title="Conclusão 1">
+                <span class="slide-number">16</span>
+                <div class="imagem-final-container"><img src="final.jpg" alt="Pessoas em comunhão, orando juntas" onerror="this.onerror=null;this.src='https.placehold.co/800x1200/4a4a4a/FFFFFF?text=Comunhão';"></div>
+                <div class="conteudo-final-container">
+                    <div class="text-container">
+                        <h2 style="color: var(--cor-conteudo-texto);">Conclusões Aplicativas</h2>
+                        <div class="card-container aplicacoes" style="flex-direction: column; gap: 20px;">
+                           <div class="card">
+                                <h3><i class="ph-fill ph-megaphone"></i> Proclame com Convicção</h3>
+                                <p>Apoie a pregação fiel na sua igreja e defenda a sã doutrina com amor. Seja uma testemunha fiel da verdade do evangelho em seu círculo de influência.</p>
+                            </div>
+                            <div class="card">
+                                <h3><i class="ph-fill ph-hands-helping"></i> Sirva com Humildade</h3>
+                                <p>Use seus dons para edificar seus irmãos. Envolva-se nos ministérios e busque oportunidades de servir, refletindo o amor sacrificial de Cristo.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide slide-com-imagem-final" data-title="Conclusão 2">
+                <span class="slide-number">17</span>
+                <div class="imagem-final-container"><img src="final.jpg" alt="Pessoas em comunhão, orando juntas" onerror="this.onerror=null;this.src='https.placehold.co/800x1200/4a4a4a/FFFFFF?text=Comunhão';"></div>
+                <div class="conteudo-final-container">
+                    <div class="text-container">
+                        <h2 style="color: var(--cor-conteudo-texto);">Conclusões Aplicativas</h2>
+                        <div class="card-container aplicacoes" style="flex-direction: column; gap: 20px;">
+                             <div class="card">
+                                <h3><i class="ph-fill ph-hands-praying"></i> Adore com Reverência</h3>
+                                <p>Valorize o culto público como um meio de graça. Participe da adoração com um coração preparado, focando nos elementos que Deus instituiu em Sua Palavra.</p>
+                            </div>
+                            <div class="card">
+                                <h3><i class="ph-fill ph-briefcase"></i> Viva com Propósito</h3>
+                                <p>Entenda seu trabalho e suas atividades diárias como um chamado santo. Viva todas as áreas da sua vida para a glória de Deus, lembrando que somos peregrinos a caminho do lar.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide slide-ultimo slide-com-imagem-final" data-title="Final">
+                <span class="slide-number">18</span>
+                <div class="slide-content">
+                    <div class="imagem-final-container"><img src="final.jpg" alt="Imagem de encerramento" onerror="this.onerror=null;this.src='https.placehold.co/800x1200/4a4a4a/FFFFFF?text=Soli Deo Gloria';"></div>
+                    <div class="conteudo-final-container">
+                         <div class="text-container" style="text-align: center; padding-right: 0;">
+                             <h1>Soli Deo Gloria</h1>
+                             <p class="subtitulo">Que Deus preserve e purifique a Sua amada Igreja, até o dia final.</p>
+                             <button id="print-button" class="qr-code-link" style="margin-top: 30px; font-size: 1rem; padding: 10px 20px;">
+                                <i class="ph ph-printer" style="vertical-align: middle; margin-right: 8px;"></i>
+                                Versão para Impressão
+                             </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+        
+        <div id="mobile-nav-buttons">
+            <button id="prev-button" aria-label="Slide Anterior"><i class="ph-bold ph-arrow-left"></i></button>
+            <button id="next-button" aria-label="Próximo Slide"><i class="ph-bold ph-arrow-right"></i></button>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const presentationContainer = document.getElementById('presentation-container');
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    let currentSlideIndex = 0;
+
+    function showSlide(index) {
+        if (index >= slides.length || index < 0) return;
+        slides.forEach(s => s.classList.remove('slide-ativo'));
+        currentSlideIndex = index;
+        slides[currentSlideIndex].classList.add('slide-ativo');
+    }
+
+    function advance() {
+        if (currentSlideIndex < slides.length - 1) {
+            showSlide(currentSlideIndex + 1);
+        }
+    }
+
+    function retreat() {
+        if (currentSlideIndex > 0) {
+            showSlide(currentSlideIndex - 1);
+        }
+    }
+    
+    // --- NAVEGAÇÃO POR TECLADO ---
+    document.addEventListener('keydown', (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+            e.preventDefault();
+            advance();
+        }
+        if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+            e.preventDefault();
+            retreat();
+        }
+    });
+
+    // --- NAVEGAÇÃO POR TOQUE (SWIPE) ---
+    let touchstartX = 0;
+    let touchendX = 0;
+    
+    function handleGesture() {
+        const swipeDistance = touchendX - touchstartX;
+        const sensitivity = 50; 
+        if (swipeDistance < -sensitivity) { advance(); }
+        if (swipeDistance > sensitivity) { retreat(); }
+    }
+
+    presentationContainer.addEventListener('touchstart', e => {
+        touchstartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    presentationContainer.addEventListener('touchend', e => {
+        touchendX = e.changedTouches[0].screenX;
+        handleGesture();
+    }, { passive: true });
+
+    // --- NAVEGAÇÃO PELOS BOTÕES MOBILE ---
+    const prevButton = document.getElementById('prev-button');
+    const nextButton = document.getElementById('next-button');
+
+    if (prevButton && nextButton) {
+        prevButton.addEventListener('click', retreat);
+        nextButton.addEventListener('click', advance);
+    }
+    
+    // --- FUNCIONALIDADE DE IMPRESSÃO ---
+    const printButton = document.getElementById('print-button');
+    if (printButton) {
+        printButton.addEventListener('click', () => {
+            const printWindow = window.open('', '_blank');
+            const originalStyles = document.querySelector('style').cloneNode(true);
+            const printStyleSheet = document.createElement('style');
+            printStyleSheet.innerHTML = `
+                @media print { @page { size: A4 portrait; margin: 1cm; } }
+                body { background-color: #fff !important; height: auto; font-size: 12pt; }
+                .slide { 
+                    page-break-inside: avoid !important; 
+                    box-shadow: none !important; 
+                    border: 1px solid #ccc; 
+                    margin-bottom: 20px;
+                    padding: 15px;
+                    height: auto !important;
+                    display: block !important;
+                    position: relative !important;
+                    opacity: 1 !important; visibility: visible !important; transform: none !important;
+                }
+                .slide-capa, .slide-ultimo, .slide-number, #mobile-nav-buttons, .capa-imagem, .imagem-final-container, .logo-container { display: none !important; }
+                .slide-content, .capa-texto, .conteudo-final-container, .title-header { width: 100% !important; height: auto !important; flex-direction: column !important; align-items: flex-start; }
+                h2 {font-size: 1.5rem !important;}
+                p, li {font-size: 1rem !important;}
+                .card-container {flex-direction: column !important;}
+            `;
+            
+            const slidesHTML = slides.map(slide => {
+                if(slide.classList.contains('slide-capa') || slide.classList.contains('slide-ultimo')) return '';
+                const clone = slide.cloneNode(true);
+                return clone.outerHTML;
+            }).join('');
+
+            printWindow.document.head.innerHTML = `
+                <meta charset="UTF-8">
+                <title>A Vocação da Igreja | Versão para Impressão</title>
+                <link rel="preconnect" href="https://fonts.googleapis.com">
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+                <script src="https://unpkg.com/@phosphor-icons/web"><\/script>
+            `;
+            printWindow.document.head.appendChild(originalStyles);
+            printWindow.document.head.appendChild(printStyleSheet);
+            printWindow.document.body.innerHTML = `<h1>Resumo: A Vocação da Igreja</h1>` + slidesHTML;
+
+            setTimeout(() => {
+                printWindow.document.close();
+                printWindow.focus();
+                printWindow.print();
+                printWindow.close();
+            }, 1200);
+        });
+    }
+    
+    showSlide(0);
+});
+</script>
+
+</body>
+</html>
